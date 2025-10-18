@@ -326,7 +326,7 @@
 
         <div id="error" class="error" style="display: none;">
             <h3>Error Loading Quiz</h3>
-            <p>There was an error loading the quiz data. Please make sure test.json is in the project directory.</p>
+            <p>There was an error loading the quiz data. Please make sure quiz.json is in the project directory.</p>
         </div>
 
         <div id="quiz-container" style="display: none;">
@@ -387,7 +387,7 @@
 
             async loadQuizData() {
                 try {
-                    const response = await fetch('test.json');
+                    const response = await fetch('quiz.json');
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
