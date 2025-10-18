@@ -1,0 +1,24 @@
+{
+  "name": "dypa-quiz",
+  "version": "1.0.0",
+  "description": "Interactive Quiz System for DYPA",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "quiz",
+    "education",
+    "interactive",
+    "dypa"
+  ],
+  "author": "DYPA",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "vercel": "^48.4.0"
+  }
+}

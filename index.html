@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DypaQuiz - Interactive Quiz System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .quiz-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .quiz-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            color: #667eea;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .options-container {
+            margin-bottom: 40px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .option.correct {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .option.incorrect {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border-color: #f44336;
+        }
+
+        .option-label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .results-container {
+            display: none;
+            text-align: center;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .score-percentage {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .score-details {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .wrong-answers {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .wrong-answer-item {
+            background: #fff;
+            border-left: 4px solid #f44336;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .wrong-question {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .wrong-user-answer {
+            color: #f44336;
+            margin-bottom: 5px;
+        }
+
+        .correct-answer {
+            color: #4CAF50;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .explanation {
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .quiz-title {
+                font-size: 2rem;
+            }
+
+            .question-text {
+                font-size: 1.2rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="quiz-title">DypaQuiz</h1>
+            <p class="quiz-subtitle">Interactive Quiz System</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading quiz...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <h3>Error Loading Quiz</h3>
+            <p>There was an error loading the quiz data. Please make sure test.json is in the project directory.</p>
+        </div>
+
+        <div id="quiz-container" style="display: none;">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Question 1 of 10</div>
+            </div>
+
+            <div id="questions-container">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+
+            <div class="navigation">
+                <button id="prev-btn" class="btn btn-secondary" disabled>Previous</button>
+                <button id="next-btn" class="btn">Next</button>
+                <button id="finish-btn" class="btn btn-success" style="display: none;">Finish Quiz</button>
+            </div>
+        </div>
+
+        <div id="results-container" class="results-container">
+            <div class="score-display">
+                <div class="score-percentage" id="score-percentage">0%</div>
+                <div class="score-details" id="score-details">0 out of 0 correct</div>
+            </div>
+
+            <div id="wrong-answers" class="wrong-answers">
+                <!-- Wrong answers will be displayed here -->
+            </div>
+
+            <button id="retake-btn" class="btn btn-success">Retake Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        class QuizApp {
+            constructor() {
+                this.quizData = null;
+                this.questions = [];
+                this.currentQuestionIndex = 0;
+                this.userAnswers = {};
+                this.isQuizComplete = false;
+                
+                this.initializeApp();
+            }
+
+            async initializeApp() {
+                try {
+                    await this.loadQuizData();
+                    this.setupEventListeners();
+                    this.startQuiz();
+                } catch (error) {
+                    console.error('Error initializing quiz:', error);
+                    this.showError();
+                }
+            }
+
+            async loadQuizData() {
+                try {
+                    const response = await fetch('test.json');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    this.quizData = await response.json();
+                    this.validateQuizData();
+                    this.randomizeQuestions();
+                } catch (error) {
+                    console.error('Error loading quiz data:', error);
+                    throw error;
+                }
+            }
+
+            validateQuizData() {
+                if (!this.quizData || !this.quizData.questions || !Array.isArray(this.quizData.questions)) {
+                    throw new Error('Invalid quiz data format');
+                }
+                
+                this.quizData.questions.forEach((question, index) => {
+                    if (!question.question || !question.options || !Array.isArray(question.options)) {
+                        throw new Error(`Invalid question format at index ${index}`);
+                    }
+                    if (typeof question.correctAnswer !== 'number' || question.correctAnswer < 0 || question.correctAnswer >= question.options.length) {
+                        throw new Error(`Invalid correctAnswer for question ${index + 1}`);
+                    }
+                });
+            }
+
+            randomizeQuestions() {
+                this.questions = [...this.quizData.questions];
+                // Fisher-Yates shuffle algorithm
+                for (let i = this.questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.questions[i], this.questions[j]] = [this.questions[j], this.questions[i]];
+                }
+            }
+
+            setupEventListeners() {
+                document.getElementById('prev-btn').addEventListener('click', () => this.previousQuestion());
+                document.getElementById('next-btn').addEventListener('click', () => this.nextQuestion());
+                document.getElementById('finish-btn').addEventListener('click', () => this.finishQuiz());
+                document.getElementById('retake-btn').addEventListener('click', () => this.retakeQuiz());
+            }
+
+            startQuiz() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('quiz-container').style.display = 'block';
+                this.renderQuestions();
+                this.updateProgress();
+                this.updateNavigation();
+            }
+
+            renderQuestions() {
+                const container = document.getElementById('questions-container');
+                container.innerHTML = '';
+
+                this.questions.forEach((question, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'question-container';
+                    questionDiv.id = `question-${index}`;
+                    
+                    questionDiv.innerHTML = `
+                        <div class="question-number">Question ${index + 1}</div>
+                        <div class="question-text">${question.question}</div>
+                        <div class="options-container">
+                            ${question.options.map((option, optionIndex) => `
+                                <div class="option" data-option="${optionIndex}" data-question="${index}">
+                                    <span class="option-label">${String.fromCharCode(65 + optionIndex)}.</span>
+                                    ${option}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+
+                    container.appendChild(questionDiv);
+
+                    // Add click listeners to options
+                    questionDiv.querySelectorAll('.option').forEach(option => {
+                        option.addEventListener('click', () => this.selectOption(index, parseInt(option.dataset.option)));
+                    });
+                });
+
+                // Show first question
+                this.showQuestion(0);
+            }
+
+            showQuestion(index) {
+                document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active'));
+                document.getElementById(`question-${index}`).classList.add('active');
+                
+                // Restore user's previous selection if any
+                const userAnswer = this.userAnswers[index];
+                if (userAnswer !== undefined) {
+                    const options = document.querySelectorAll(`#question-${index} .option`);
+                    options.forEach(option => option.classList.remove('selected'));
+                    if (options[userAnswer]) {
+                        options[userAnswer].classList.add('selected');
+                    }
+                }
+            }
+
+            selectOption(questionIndex, optionIndex) {
+                // Remove previous selection
+                const options = document.querySelectorAll(`#question-${questionIndex} .option`);
+                options.forEach(option => option.classList.remove('selected'));
+                
+                // Add selection to clicked option
+                options[optionIndex].classList.add('selected');
+                
+                // Store user's answer
+                this.userAnswers[questionIndex] = optionIndex;
+                
+                // Update navigation
+                this.updateNavigation();
+            }
+
+            previousQuestion() {
+                if (this.currentQuestionIndex > 0) {
+                    this.currentQuestionIndex--;
+                    this.showQuestion(this.currentQuestionIndex);
+                    this.updateProgress();
+                    this.updateNavigation();
+                }
+            }
+
+            nextQuestion() {
+                if (this.currentQuestionIndex < this.questions.length - 1) {
+                    this.currentQuestionIndex++;
+                    this.showQuestion(this.currentQuestionIndex);
+                    this.updateProgress();
+                    this.updateNavigation();
+                }
+            }
+
+            updateProgress() {
+                const progress = ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                document.getElementById('progress-text').textContent = 
+                    `Question ${this.currentQuestionIndex + 1} of ${this.questions.length}`;
+            }
+
+            updateNavigation() {
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                const finishBtn = document.getElementById('finish-btn');
+
+                prevBtn.disabled = this.currentQuestionIndex === 0;
+                
+                if (this.currentQuestionIndex === this.questions.length - 1) {
+                    nextBtn.style.display = 'none';
+                    finishBtn.style.display = 'inline-block';
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                    finishBtn.style.display = 'none';
+                }
+            }
+
+            finishQuiz() {
+                this.isQuizComplete = true;
+                this.calculateResults();
+                this.showResults();
+            }
+
+            calculateResults() {
+                let correctCount = 0;
+                const wrongAnswers = [];
+
+                this.questions.forEach((question, index) => {
+                    const userAnswer = this.userAnswers[index];
+                    const correctAnswer = question.correctAnswer;
+                    
+                    if (userAnswer === correctAnswer) {
+                        correctCount++;
+                    } else {
+                        wrongAnswers.push({
+                            question: question.question,
+                            userAnswer: userAnswer !== undefined ? question.options[userAnswer] : 'Not answered',
+                            correctAnswer: question.options[correctAnswer],
+                            explanation: question.explanation || ''
+                        });
+                    }
+                });
+
+                this.results = {
+                    total: this.questions.length,
+                    correct: correctCount,
+                    wrong: wrongAnswers,
+                    percentage: Math.round((correctCount / this.questions.length) * 100)
+                };
+            }
+
+            showResults() {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('results-container').classList.add('active');
+
+                // Update score display
+                document.getElementById('score-percentage').textContent = `${this.results.percentage}%`;
+                document.getElementById('score-details').textContent = 
+                    `${this.results.correct} out of ${this.results.total} correct`;
+
+                // Display wrong answers
+                const wrongAnswersContainer = document.getElementById('wrong-answers');
+                if (this.results.wrong.length === 0) {
+                    wrongAnswersContainer.innerHTML = '<h3 style="text-align: center; color: #4CAF50;">🎉 Perfect! All answers are correct!</h3>';
+                } else {
+                    wrongAnswersContainer.innerHTML = `
+                        <h3 style="margin-bottom: 20px; color: #f44336;">Incorrect Answers (${this.results.wrong.length})</h3>
+                        ${this.results.wrong.map((item, index) => `
+                            <div class="wrong-answer-item">
+                                <div class="wrong-question">${index + 1}. ${item.question}</div>
+                                <div class="wrong-user-answer">Your answer: ${item.userAnswer}</div>
+                                <div class="correct-answer">Correct answer: ${item.correctAnswer}</div>
+                                ${item.explanation ? `<div class="explanation">${item.explanation}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    `;
+                }
+            }
+
+            retakeQuiz() {
+                // Reset all data
+                this.currentQuestionIndex = 0;
+                this.userAnswers = {};
+                this.isQuizComplete = false;
+                this.results = null;
+
+                // Hide results, show quiz
+                document.getElementById('results-container').classList.remove('active');
+                document.getElementById('quiz-container').style.display = 'block';
+
+                // Randomize questions again
+                this.randomizeQuestions();
+                this.renderQuestions();
+                this.showQuestion(0);
+                this.updateProgress();
+                this.updateNavigation();
+            }
+
+            showError() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        // Initialize the quiz app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new QuizApp();
+        });
+    </script>
+</body>
+</html>
