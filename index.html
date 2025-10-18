@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DypaQuiz - Interactive Quiz System</title>
     <style>
         * {
@@ -19,6 +19,13 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .container {
@@ -116,6 +123,10 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            touch-action: manipulation;
         }
 
         .option:hover {
@@ -287,28 +298,139 @@
             text-align: center;
         }
 
+        /* Mobile-specific styles */
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
-                margin: 10px;
+                padding: 15px;
+                margin: 5px;
+                border-radius: 15px;
             }
 
             .quiz-title {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-bottom: 5px;
+            }
+
+            .quiz-subtitle {
+                font-size: 1rem;
             }
 
             .question-text {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }
+
+            .option {
+                padding: 12px 15px;
+                margin-bottom: 12px;
+                font-size: 0.95rem;
+            }
+
+            .option-label {
+                font-size: 0.9rem;
             }
 
             .navigation {
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
             }
 
             .btn {
                 width: 100%;
+                padding: 14px 20px;
+                font-size: 0.95rem;
             }
+
+            .progress-text {
+                font-size: 0.9rem;
+            }
+
+            .score-percentage {
+                font-size: 2.5rem;
+            }
+
+            .score-details {
+                font-size: 1.1rem;
+            }
+
+            .wrong-answer-item {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .wrong-question {
+                font-size: 1rem;
+            }
+
+            .wrong-user-answer,
+            .correct-answer {
+                font-size: 0.9rem;
+            }
+
+            .explanation {
+                font-size: 0.85rem;
+                padding: 8px;
+            }
+        }
+
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin: 2px;
+            }
+
+            .quiz-title {
+                font-size: 1.6rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .option {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            .score-percentage {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Mobile device specific optimizations */
+        .mobile-device .container {
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .mobile-device .option {
+            min-height: 50px;
+            padding: 16px 20px;
+        }
+
+        .mobile-device .btn {
+            min-height: 48px;
+            font-size: 1rem;
+        }
+
+        .mobile-device .option:active {
+            transform: scale(0.98);
+            background: #e9ecef;
+        }
+
+        /* Prevent text selection on mobile */
+        .mobile-device * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
@@ -370,18 +492,47 @@
                 this.currentQuestionIndex = 0;
                 this.userAnswers = {};
                 this.isQuizComplete = false;
+                this.isMobile = this.detectMobile();
                 
                 this.initializeApp();
+            }
+
+            detectMobile() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                       window.innerWidth <= 768 || 
+                       ('ontouchstart' in window);
             }
 
             async initializeApp() {
                 try {
                     await this.loadQuizData();
                     this.setupEventListeners();
+                    this.optimizeForMobile();
                     this.startQuiz();
                 } catch (error) {
                     console.error('Error initializing quiz:', error);
                     this.showError();
+                }
+            }
+
+            optimizeForMobile() {
+                if (this.isMobile) {
+                    // Add mobile-specific optimizations
+                    document.body.classList.add('mobile-device');
+                    
+                    // Prevent zoom on double tap
+                    let lastTouchEnd = 0;
+                    document.addEventListener('touchend', function (event) {
+                        const now = (new Date()).getTime();
+                        if (now - lastTouchEnd <= 300) {
+                            event.preventDefault();
+                        }
+                        lastTouchEnd = now;
+                    }, false);
+                    
+                    // Optimize scrolling
+                    document.body.style.overflow = 'auto';
+                    document.body.style.webkitOverflowScrolling = 'touch';
                 }
             }
 
@@ -466,6 +617,20 @@
                     // Add click listeners to options
                     questionDiv.querySelectorAll('.option').forEach(option => {
                         option.addEventListener('click', () => this.selectOption(index, parseInt(option.dataset.option)));
+                        
+                        // Add touch-friendly interactions for mobile
+                        if (this.isMobile) {
+                            option.addEventListener('touchstart', (e) => {
+                                e.preventDefault();
+                                option.style.transform = 'scale(0.98)';
+                            });
+                            
+                            option.addEventListener('touchend', (e) => {
+                                e.preventDefault();
+                                option.style.transform = '';
+                                this.selectOption(index, parseInt(option.dataset.option));
+                            });
+                        }
                     });
                 });
 
