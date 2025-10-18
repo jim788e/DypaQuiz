@@ -146,6 +146,12 @@ php -S localhost:8000
 
 MIT License - feel free to use and modify as needed.
 
+## Credits
+
+**Created by D.Misios**
+
+A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScript.
+
 ## Support
 
 For issues or questions:
