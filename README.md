@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DypaQuiz - Interactive Quiz System
 
 A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScript.
@@ -89,3 +90,7 @@ The application expects a JSON file with the following structure:
 ## License
 
 MIT License - feel free to use and modify as needed.
+=======
+# DypaQuiz
+A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScript. 
+>>>>>>> 37c3481c82b3911ad3f6f79f52daad882d66304a
