@@ -41,6 +41,32 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
+        }
+
+        .lang-switcher {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            background: #ffffffcc;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-btn.active {
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
         }
 
         .quiz-title {
@@ -57,6 +83,86 @@
 
         .progress-container {
             margin-bottom: 30px;
+        }
+
+        .section-container {
+            display: none; /* becomes flex when sections exist */
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .start-screen {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .start-card {
+            background: #fff;
+            border: 1px solid #eaeaea;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            display: inline-block;
+            min-width: 260px;
+        }
+
+        .start-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .start-actions {
+            margin-top: 16px;
+        }
+
+        .feedback-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .feedback-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            font-size: 0.95rem;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 0;
+            top: 100%;
+            transform: translateY(6px);
+            background: #333;
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            max-width: 260px;
+            z-index: 5;
+        }
+
+
+        .section-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            font-size: 0.95rem;
         }
 
         .progress-bar {
@@ -127,6 +233,12 @@
             display: flex;
             align-items: center;
             touch-action: manipulation;
+        }
+
+        /* Allow tooltip to render outside the option when active */
+        .option.tooltip {
+            overflow: visible;
+            z-index: 3;
         }
 
         .option:hover {
@@ -227,6 +339,13 @@
         .score-details {
             font-size: 1.2rem;
             opacity: 0.9;
+        }
+
+        .section-summary {
+            text-align: right;
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
         }
 
         .wrong-answers {
@@ -437,21 +556,45 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="quiz-title">DypaQuiz</h1>
-            <p class="quiz-subtitle">Interactive Quiz System</p>
+            <div class="lang-switcher" aria-label="Language selector">
+                <button class="lang-btn" data-lang="en" id="lang-en" title="English (US)">🇺🇸 <span>EN</span></button>
+                <button class="lang-btn" data-lang="el" id="lang-el" title="Ελληνικά">🇬🇷 <span>EL</span></button>
+            </div>
+            <h1 class="quiz-title" data-i18n="app.title">DypaQuiz</h1>
+            <p class="quiz-subtitle" data-i18n="app.subtitle">Interactive Quiz System</p>
         </div>
 
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p>Loading quiz...</p>
+            <p data-i18n="loading">Loading quiz...</p>
         </div>
 
         <div id="error" class="error" style="display: none;">
-            <h3>Error Loading Quiz</h3>
-            <p>There was an error loading the quiz data. Please make sure quiz.json is in the project directory.</p>
+            <h3 data-i18n="error.title">Error Loading Quiz</h3>
+            <p data-i18n="error.detail">There was an error loading the quiz data. Please make sure quiz.json is in the project directory.</p>
+        </div>
+
+        <div id="start-screen" class="start-screen">
+            <div class="start-card">
+                <div id="section-container" class="section-container" aria-label="Section selector" style="justify-content:center; margin-bottom:20px;">
+                    <label for="section-select" id="section-label" data-i18n="sections.label" style="margin-right:8px;">Section:</label>
+                    <select id="section-select" class="section-select"></select>
+                </div>
+                <div class="start-actions">
+                    <button id="start-btn" class="btn" data-i18n="start">Start</button>
+                </div>
+                <div class="feedback-container">
+                    <label for="feedback-select" id="feedback-label" data-i18n="feedback.label">Feedback:</label>
+                    <select id="feedback-select" class="feedback-select">
+                        <option value="end" data-i18n="feedback.end">At the end</option>
+                        <option value="immediate" data-i18n="feedback.immediate">After each question</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div id="quiz-container" style="display: none;">
+            <div id="section-summary" class="section-summary" style="display:none;"></div>
             <div class="progress-container">
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
@@ -464,9 +607,9 @@
             </div>
 
             <div class="navigation">
-                <button id="prev-btn" class="btn btn-secondary" disabled>Previous</button>
-                <button id="next-btn" class="btn">Next</button>
-                <button id="finish-btn" class="btn btn-success" style="display: none;">Finish Quiz</button>
+                <button id="prev-btn" class="btn btn-secondary" disabled data-i18n="nav.previous">Previous</button>
+                <button id="next-btn" class="btn" data-i18n="nav.next">Next</button>
+                <button id="finish-btn" class="btn btn-success" style="display: none;" data-i18n="nav.finish">Finish Quiz</button>
             </div>
         </div>
 
@@ -480,7 +623,8 @@
                 <!-- Wrong answers will be displayed here -->
             </div>
 
-            <button id="retake-btn" class="btn btn-success">Retake Quiz</button>
+            <button id="retake-btn" class="btn btn-success" data-i18n="nav.retake">Retake Quiz</button>
+            <button id="home-btn" class="btn btn-secondary" style="margin-left:10px;">Return to start</button>
         </div>
     </div>
 
@@ -493,8 +637,109 @@
                 this.userAnswers = {};
                 this.isQuizComplete = false;
                 this.isMobile = this.detectMobile();
+                this.lang = this.getInitialLanguage();
+                this.translations = this.getTranslations();
+                this.sections = [];
+                this.currentSection = 'all';
+                this.feedbackMode = this.getInitialFeedbackMode();
                 
                 this.initializeApp();
+            }
+
+            getInitialFeedbackMode() {
+                const saved = localStorage.getItem('feedbackMode');
+                return saved === 'immediate' ? 'immediate' : 'end';
+            }
+
+            getInitialLanguage() {
+                const saved = localStorage.getItem('lang');
+                const supported = ['en', 'el'];
+                if (saved && supported.includes(saved)) return saved;
+                // try browser language
+                const browser = (navigator.language || 'en').slice(0,2);
+                return supported.includes(browser) ? browser : 'en';
+            }
+
+            getTranslations() {
+                return {
+                    en: {
+                        'app.title': 'DypaQuiz',
+                        'app.subtitle': 'Interactive Quiz System',
+                        loading: 'Loading quiz...',
+                        'error.title': 'Error Loading Quiz',
+                        'error.detail': 'There was an error loading the quiz data. Please make sure quiz.json is in the project directory.',
+                        'nav.previous': 'Previous',
+                        'nav.next': 'Next',
+                        'nav.finish': 'Finish Quiz',
+                        'nav.retake': 'Retake Quiz',
+                        'nav.home': 'Return to start',
+                        start: 'Start',
+                        'sections.label': 'Section:',
+                        'sections.all': 'All sections',
+                        'feedback.label': 'Feedback:',
+                        'feedback.end': 'At the end',
+                        'feedback.immediate': 'After each question',
+                        'sections.summary': 'Section: {name} ({count}/{total})',
+                        'progress': 'Question {current} of {total}',
+                        'results.details': '{correct} out of {total} correct',
+                        'results.perfect': '🎉 Perfect! All answers are correct!',
+                        'results.incorrectHeader': 'Incorrect Answers ({count})',
+                        'results.yourAnswer': 'Your answer: {answer}',
+                        'results.correctAnswer': 'Correct answer: {answer}',
+                        'results.notAnswered': 'Not answered'
+                    },
+                    el: {
+                        'app.title': 'DypaQuiz',
+                        'app.subtitle': 'Διαδραστικό Σύστημα Κουίζ',
+                        loading: 'Φόρτωση κουίζ...',
+                        'error.title': 'Σφάλμα φόρτωσης κουίζ',
+                        'error.detail': 'Παρουσιάστηκε σφάλμα κατά τη φόρτωση των δεδομένων. Βεβαιωθείτε ότι το quiz.json βρίσκεται στον φάκελο του έργου.',
+                        'nav.previous': 'Προηγούμενο',
+                        'nav.next': 'Επόμενο',
+                        'nav.finish': 'Ολοκλήρωση',
+                        'nav.retake': 'Επανάληψη Κουίζ',
+                        'nav.home': 'Επιστροφή στην αρχική',
+                        start: 'Έναρξη',
+                        'sections.label': 'Ενότητα:',
+                        'sections.all': 'Όλες οι ενότητες',
+                        'feedback.label': 'Έλεγχος απάντησης',
+                        'feedback.end': 'Στο τέλος',
+                        'feedback.immediate': 'Μετά από κάθε ερώτηση',
+                        'sections.summary': 'Ενότητα: {name} ({count}/{total})',
+                        'progress': 'Ερώτηση {current} από {total}',
+                        'results.details': '{correct} από {total} σωστές',
+                        'results.perfect': '🎉 Τέλεια! Όλες οι απαντήσεις είναι σωστές!',
+                        'results.incorrectHeader': 'Λανθασμένες Απαντήσεις ({count})',
+                        'results.yourAnswer': 'Η απάντησή σας: {answer}',
+                        'results.correctAnswer': 'Σωστή απάντηση: {answer}',
+                        'results.notAnswered': 'Δεν απαντήθηκε'
+                    }
+                };
+            }
+
+            t(key, vars = {}) {
+                const dict = this.translations[this.lang] || this.translations.en;
+                let text = dict[key] || key;
+                for (const [k,v] of Object.entries(vars)) {
+                    text = text.replace(new RegExp(`\\{${k}\\}`,'g'), String(v));
+                }
+                return text;
+            }
+
+            setLanguage(lang) {
+                if (!['en','el'].includes(lang)) return;
+                this.lang = lang;
+                localStorage.setItem('lang', lang);
+                document.documentElement.setAttribute('lang', lang);
+                this.updateLangButtons();
+                this.applyTranslations();
+            }
+
+            updateLangButtons() {
+                const enBtn = document.getElementById('lang-en');
+                const elBtn = document.getElementById('lang-el');
+                enBtn.classList.toggle('active', this.lang === 'en');
+                elBtn.classList.toggle('active', this.lang === 'el');
             }
 
             detectMobile() {
@@ -505,10 +750,14 @@
 
             async initializeApp() {
                 try {
+                    this.updateLangButtons();
+                    this.applyTranslations();
                     await this.loadQuizData();
+                    this.computeSections();
+                    this.setupSectionSelector();
                     this.setupEventListeners();
                     this.optimizeForMobile();
-                    this.startQuiz();
+                    this.showStartScreenOrQuiz();
                 } catch (error) {
                     console.error('Error initializing quiz:', error);
                     this.showError();
@@ -544,7 +793,9 @@
                     }
                     this.quizData = await response.json();
                     this.validateQuizData();
-                    this.randomizeQuestions();
+                    // Keep a copy of all questions; filtering happens later
+                    this.allQuestions = Array.isArray(this.quizData.questions) ? [...this.quizData.questions] : [];
+                    this.applySectionFilter();
                 } catch (error) {
                     console.error('Error loading quiz data:', error);
                     throw error;
@@ -567,11 +818,58 @@
             }
 
             randomizeQuestions() {
-                this.questions = [...this.quizData.questions];
+                this.questions = [...this.questions];
                 // Fisher-Yates shuffle algorithm
                 for (let i = this.questions.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [this.questions[i], this.questions[j]] = [this.questions[j], this.questions[i]];
+                }
+            }
+
+            computeSections() {
+                const counts = new Map();
+                (this.allQuestions || []).forEach(q => {
+                    const s = (q.section || '').trim();
+                    if (!s) return;
+                    counts.set(s, (counts.get(s) || 0) + 1);
+                });
+                this.sections = Array.from(counts.keys());
+                this.sectionCounts = counts;
+                this.totalCount = (this.allQuestions || []).length;
+            }
+
+            setupSectionSelector() {
+                const container = document.getElementById('section-container');
+                const select = document.getElementById('section-select');
+                if (!container || !select) return;
+
+                if (this.sections.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
+
+                container.style.display = 'flex';
+                // Build options
+                select.innerHTML = '';
+                const allOpt = document.createElement('option');
+                allOpt.value = 'all';
+                allOpt.textContent = `${this.t('sections.all')} (${this.totalCount})`;
+                select.appendChild(allOpt);
+                this.sections.forEach(sec => {
+                    const opt = document.createElement('option');
+                    opt.value = sec;
+                    const count = this.sectionCounts?.get(sec) || 0;
+                    opt.textContent = `${sec} (${count})`;
+                    select.appendChild(opt);
+                });
+                select.value = this.currentSection;
+            }
+
+            applySectionFilter() {
+                if (this.currentSection === 'all') {
+                    this.questions = [...(this.allQuestions || [])];
+                } else {
+                    this.questions = (this.allQuestions || []).filter(q => (q.section || '').trim() === this.currentSection);
                 }
             }
 
@@ -580,27 +878,91 @@
                 document.getElementById('next-btn').addEventListener('click', () => this.nextQuestion());
                 document.getElementById('finish-btn').addEventListener('click', () => this.finishQuiz());
                 document.getElementById('retake-btn').addEventListener('click', () => this.retakeQuiz());
+                document.getElementById('lang-en').addEventListener('click', () => this.setLanguage('en'));
+                document.getElementById('lang-el').addEventListener('click', () => this.setLanguage('el'));
+                const sectionSelect = document.getElementById('section-select');
+                if (sectionSelect) {
+                    sectionSelect.addEventListener('change', (e) => {
+                        this.currentSection = e.target.value || 'all';
+                        // If on start screen simply apply filter; if already in quiz, rebuild
+                        this.currentQuestionIndex = 0;
+                        this.userAnswers = {};
+                        this.isQuizComplete = false;
+                        this.applySectionFilter();
+                        if (document.getElementById('quiz-container').style.display !== 'none') {
+                            this.renderQuestions();
+                            this.updateProgress();
+                            this.updateNavigation();
+                        }
+                    });
+                }
+                const startBtn = document.getElementById('start-btn');
+                if (startBtn) {
+                    startBtn.addEventListener('click', () => {
+                        this.startQuiz();
+                    });
+                }
+                const homeBtn = document.getElementById('home-btn');
+                if (homeBtn) {
+                    homeBtn.addEventListener('click', () => {
+                        document.getElementById('results-container').classList.remove('active');
+                        document.getElementById('quiz-container').style.display = 'none';
+                        document.getElementById('start-screen').style.display = 'block';
+                    });
+                }
+                const feedbackSelect = document.getElementById('feedback-select');
+                if (feedbackSelect) {
+                    feedbackSelect.value = this.feedbackMode;
+                    feedbackSelect.addEventListener('change', (e) => {
+                        const val = e.target.value === 'immediate' ? 'immediate' : 'end';
+                        this.feedbackMode = val;
+                        localStorage.setItem('feedbackMode', val);
+                    });
+                }
             }
 
             startQuiz() {
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('start-screen').style.display = 'none';
                 document.getElementById('quiz-container').style.display = 'block';
                 this.renderQuestions();
                 this.updateProgress();
                 this.updateNavigation();
+                this.updateSectionSummary();
+            }
+
+            showStartScreenOrQuiz() {
+                const hasSections = (this.sections && this.sections.length > 0);
+                document.getElementById('loading').style.display = 'none';
+                if (hasSections) {
+                    document.getElementById('start-screen').style.display = 'block';
+                    document.getElementById('quiz-container').style.display = 'none';
+                } else {
+                    this.startQuiz();
+                }
             }
 
             renderQuestions() {
                 const container = document.getElementById('questions-container');
                 container.innerHTML = '';
 
-                this.questions.forEach((question, index) => {
+                // Shuffle a working copy to avoid reshuffling on every render
+                const working = [...this.questions];
+                // Fisher-Yates shuffle
+                for (let i = working.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [working[i], working[j]] = [working[j], working[i]];
+                }
+
+                this.shuffledIndexMap = working.map((_, idx) => idx); // maintain length
+
+                working.forEach((question, index) => {
                     const questionDiv = document.createElement('div');
                     questionDiv.className = 'question-container';
                     questionDiv.id = `question-${index}`;
                     
                     questionDiv.innerHTML = `
-                        <div class="question-number">Question ${index + 1}</div>
+                        <div class="question-number" data-question-number="${index}">Question ${index + 1}</div>
                         <div class="question-text">${question.question}</div>
                         <div class="options-container">
                             ${question.options.map((option, optionIndex) => `
@@ -664,6 +1026,25 @@
                 // Store user's answer
                 this.userAnswers[questionIndex] = optionIndex;
                 
+                if (this.feedbackMode === 'immediate') {
+                    const question = this.questions[questionIndex];
+                    const correctIdx = question.correctAnswer;
+                    options.forEach((optEl, idx) => {
+                        optEl.classList.remove('correct', 'incorrect', 'tooltip');
+                        optEl.removeAttribute('data-tooltip');
+                        if (idx === correctIdx) {
+                            optEl.classList.add('correct');
+                        }
+                    });
+                    if (optionIndex !== correctIdx) {
+                        const wrongEl = options[optionIndex];
+                        wrongEl.classList.add('incorrect', 'tooltip');
+                        const correctText = question.options[correctIdx];
+                        const explanation = question.explanation ? `\n${question.explanation}` : '';
+                        wrongEl.setAttribute('data-tooltip', this.t('results.correctAnswer', { answer: correctText }) + explanation);
+                    }
+                }
+
                 // Update navigation
                 this.updateNavigation();
             }
@@ -690,22 +1071,25 @@
                 const progress = ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
                 document.getElementById('progress-fill').style.width = `${progress}%`;
                 document.getElementById('progress-text').textContent = 
-                    `Question ${this.currentQuestionIndex + 1} of ${this.questions.length}`;
+                    this.t('progress', { current: this.currentQuestionIndex + 1, total: this.questions.length });
             }
 
             updateNavigation() {
                 const prevBtn = document.getElementById('prev-btn');
                 const nextBtn = document.getElementById('next-btn');
                 const finishBtn = document.getElementById('finish-btn');
+                const answered = this.userAnswers[this.currentQuestionIndex] !== undefined;
 
                 prevBtn.disabled = this.currentQuestionIndex === 0;
                 
                 if (this.currentQuestionIndex === this.questions.length - 1) {
                     nextBtn.style.display = 'none';
                     finishBtn.style.display = 'inline-block';
+                    finishBtn.disabled = !answered;
                 } else {
                     nextBtn.style.display = 'inline-block';
                     finishBtn.style.display = 'none';
+                    nextBtn.disabled = !answered;
                 }
             }
 
@@ -728,7 +1112,7 @@
                     } else {
                         wrongAnswers.push({
                             question: question.question,
-                            userAnswer: userAnswer !== undefined ? question.options[userAnswer] : 'Not answered',
+                            userAnswer: userAnswer !== undefined ? question.options[userAnswer] : this.t('results.notAnswered'),
                             correctAnswer: question.options[correctAnswer],
                             explanation: question.explanation || ''
                         });
@@ -750,21 +1134,21 @@
                 // Update score display
                 document.getElementById('score-percentage').textContent = `${this.results.percentage}%`;
                 document.getElementById('score-details').textContent = 
-                    `${this.results.correct} out of ${this.results.total} correct`;
+                    this.t('results.details', { correct: this.results.correct, total: this.results.total });
 
                 // Display wrong answers
                 const wrongAnswersContainer = document.getElementById('wrong-answers');
                 if (this.results.wrong.length === 0) {
-                    wrongAnswersContainer.innerHTML = '<h3 style="text-align: center; color: #4CAF50;">🎉 Perfect! All answers are correct!</h3>';
+                    wrongAnswersContainer.innerHTML = `<h3 style="text-align: center; color: #4CAF50;">${this.t('results.perfect')}</h3>`;
                 } else {
                     wrongAnswersContainer.innerHTML = `
-                        <h3 style="margin-bottom: 20px; color: #f44336;">Incorrect Answers (${this.results.wrong.length})</h3>
+                        <h3 style="margin-bottom: 20px; color: #f44336;">${this.t('results.incorrectHeader', { count: this.results.wrong.length })}</h3>
                         ${this.results.wrong.map((item, index) => `
-                            <div class="wrong-answer-item">
-                                <div class="wrong-question">${index + 1}. ${item.question}</div>
-                                <div class="wrong-user-answer">Your answer: ${item.userAnswer}</div>
-                                <div class="correct-answer">Correct answer: ${item.correctAnswer}</div>
-                                ${item.explanation ? `<div class="explanation">${item.explanation}</div>` : ''}
+                            <div class=\"wrong-answer-item\">
+                                <div class=\"wrong-question\">${index + 1}. ${item.question}</div>
+                                <div class=\"wrong-user-answer\">${this.t('results.yourAnswer', { answer: item.userAnswer })}</div>
+                                <div class=\"correct-answer\">${this.t('results.correctAnswer', { answer: item.correctAnswer })}</div>
+                                ${item.explanation ? `<div class=\"explanation\">${item.explanation}</div>` : ''}
                             </div>
                         `).join('')}
                     `;
@@ -793,6 +1177,65 @@
             showError() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error').style.display = 'block';
+            }
+
+            applyTranslations() {
+                // Static labels
+                const mappings = [
+                    ['app.title', '.quiz-title'],
+                    ['app.subtitle', '.quiz-subtitle'],
+                    ['loading', '#loading p'],
+                    ['error.title', '#error h3'],
+                    ['error.detail', '#error p'],
+                    ['nav.previous', '#prev-btn'],
+                    ['nav.next', '#next-btn'],
+                    ['nav.finish', '#finish-btn'],
+                    ['nav.retake', '#retake-btn'],
+                    ['nav.home', '#home-btn'],
+                    ['start', '#start-btn'],
+                    ['feedback.label', '#feedback-label'],
+                    ['feedback.end', "#feedback-select option[value='end']"],
+                    ['feedback.immediate', "#feedback-select option[value='immediate']"],
+                ];
+                for (const [key, selector] of mappings) {
+                    const el = document.querySelector(selector);
+                    if (el) el.textContent = this.t(key);
+                }
+
+                // Section label and 'all' option
+                const sectionLabel = document.getElementById('section-label');
+                if (sectionLabel) sectionLabel.textContent = this.t('sections.label');
+                const sectionSelect = document.getElementById('section-select');
+                if (sectionSelect && sectionSelect.options.length > 0) {
+                    const first = sectionSelect.options[0];
+                    if (first && first.value === 'all') first.textContent = `${this.t('sections.all')} (${this.totalCount || 0})`;
+                }
+
+                // Progress text
+                const progressEl = document.getElementById('progress-text');
+                if (progressEl && this.questions.length > 0) {
+                    progressEl.textContent = this.t('progress', { current: this.currentQuestionIndex + 1, total: this.questions.length });
+                }
+
+                // Question numbering labels
+                document.querySelectorAll('[data-question-number]').forEach((el) => {
+                    const idx = Number(el.getAttribute('data-question-number'));
+                    el.textContent = this.t('progress', { current: idx + 1, total: this.questions.length });
+                });
+            }
+
+            updateSectionSummary() {
+                const el = document.getElementById('section-summary');
+                if (!el) return;
+                const total = this.totalCount || 0;
+                const name = this.currentSection === 'all' ? this.t('sections.all') : this.currentSection;
+                const count = this.currentSection === 'all' ? (this.allQuestions?.length || 0) : (this.sectionCounts?.get(this.currentSection) || 0);
+                if (count > 0) {
+                    el.style.display = 'block';
+                    el.textContent = this.t('sections.summary', { name, count, total });
+                } else {
+                    el.style.display = 'none';
+                }
             }
         }
 
