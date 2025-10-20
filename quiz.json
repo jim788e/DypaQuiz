@@ -1,75 +1,105 @@
 {
-  "quizTitle": "Test Quiz gia DYPA",
+  "quizTitle": "Διεθνές Μάρκετινγκ - Ερωτήσεις Σωστού/Λάθους",
   "questions": [
     {
       "id": 1,
-      "question": "What is the largest planet in our solar system?",
-      "options": ["Mars", "Jupiter", "Saturn", "Neptune"],
+      "question": "Οι πολυεθνικές εταιρείες συχνά ακολουθούν μια ενιαία στρατηγική branding για όλες τις αγορές του κόσμου.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
       "correctAnswer": 1,
-      "explanation": "Jupiter is the largest planet in our solar system, with a diameter of about 143,000 kilometers."
+      "explanation": "Συνήθως απαιτείται προσαρμογή στις τοπικές αγορές, οπότε η δήλωση είναι λανθασμένη."
     },
     {
       "id": 2,
-      "question": "Who painted the Mona Lisa?",
-      "options": ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
-      "correctAnswer": 2,
-      "explanation": "Leonardo da Vinci painted the Mona Lisa between 1503 and 1519. It is now housed in the Louvre Museum in Paris."
+      "question": "Η πολιτισμική προσαρμογή θεωρείται κρίσιμο στοιχείο για την επιτυχία της στρατηγικής branding στις διεθνείς αγορές.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Η πολιτισμική προσαρμογή είναι σημαντική για την επιτυχία του branding διεθνώς."
     },
     {
       "id": 3,
-      "question": "What is the chemical symbol for gold?",
-      "options": ["Go", "Gd", "Au", "Ag"],
-      "correctAnswer": 2,
-      "explanation": "The chemical symbol for gold is Au, which comes from the Latin word 'aurum' meaning gold."
+      "question": "Οι προτιμήσεις των καταναλωτών παραμένουν σταθερές ανεξαρτήτως πολιτισμικού πλαισίου.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Οι προτιμήσεις αλλάζουν ανάλογα με το πολιτισμικό περιβάλλον."
     },
     {
       "id": 4,
-      "question": "Which country is home to the kangaroo?",
-      "options": ["New Zealand", "Australia", "South Africa", "Brazil"],
+      "question": "Η τυποποίηση της στρατηγικής marketing είναι πάντα πιο αποτελεσματική από την προσαρμογή.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
       "correctAnswer": 1,
-      "explanation": "Kangaroos are native to Australia and are one of the country's most iconic animals."
+      "explanation": "Δεν υπάρχει 'πάντα' — σε πολλές περιπτώσεις η προσαρμογή είναι πιο αποτελεσματική."
     },
     {
       "id": 5,
-      "question": "How many continents are there on Earth?",
-      "options": ["5", "6", "7", "8"],
-      "correctAnswer": 2,
-      "explanation": "There are 7 continents: Africa, Antarctica, Asia, Europe, North America, Oceania, and South America."
+      "question": "Η κουλτούρα επηρεάζει τον τρόπο με τον οποίο οι καταναλωτές αντιλαμβάνονται τα εμπορικά σήματα.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Η κουλτούρα επηρεάζει τις αντιλήψεις και τη συναισθηματική ανταπόκριση στα brands."
     },
     {
       "id": 6,
-      "question": "What is the speed of light in vacuum?",
-      "options": ["300,000 km/s", "150,000 km/s", "450,000 km/s", "200,000 km/s"],
+      "question": "Η υπερβολική προσαρμογή μπορεί να αποδυναμώσει την ενιαία ταυτότητα ενός brand.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
       "correctAnswer": 0,
-      "explanation": "The speed of light in vacuum is approximately 299,792 kilometers per second, commonly rounded to 300,000 km/s."
+      "explanation": "Η υπερβολική διαφοροποίηση ανά χώρα μπορεί να αποδυναμώσει τη συνοχή του brand."
     },
     {
       "id": 7,
-      "question": "Who wrote the play 'Romeo and Juliet'?",
-      "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+      "question": "Οι τοπικές αγορές χαρακτηρίζονται από ομοιογένεια όσον αφορά τις καταναλωτικές συμπεριφορές.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
       "correctAnswer": 1,
-      "explanation": "William Shakespeare wrote Romeo and Juliet around 1594-1596. It is one of his most famous tragedies."
+      "explanation": "Οι τοπικές αγορές είναι ετερογενείς, όχι ομοιογενείς."
     },
     {
       "id": 8,
-      "question": "What is the smallest prime number?",
-      "options": ["0", "1", "2", "3"],
-      "correctAnswer": 2,
-      "explanation": "The number 2 is the smallest prime number and the only even prime number."
+      "question": "Η επιτυχής διεθνής στρατηγική branding απαιτεί συνδυασμό τυποποίησης και προσαρμογής.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Ο βέλτιστος τρόπος είναι ο συνδυασμός τυποποίησης και προσαρμογής."
     },
     {
       "id": 9,
-      "question": "In which year did World War II end?",
-      "options": ["1943", "1944", "1945", "1946"],
-      "correctAnswer": 2,
-      "explanation": "World War II ended in 1945, with Germany surrendering in May and Japan in September after the atomic bombings."
+      "question": "Οι καταναλωτές σε παγκόσμιο επίπεδο αντιδρούν με τον ίδιο τρόπο στα ίδια διαφημιστικά μηνύματα.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Οι αντιδράσεις διαφέρουν ανάλογα με τις πολιτισμικές αξίες κάθε αγοράς."
     },
     {
       "id": 10,
-      "question": "What is the capital city of Japan?",
-      "options": ["Osaka", "Kyoto", "Tokyo", "Hiroshima"],
-      "correctAnswer": 2,
-      "explanation": "Tokyo is the capital of Japan and one of the most populous metropolitan areas in the world."
+      "question": "Η κατανόηση της τοπικής κουλτούρας μπορεί να προσφέρει ανταγωνιστικό πλεονέκτημα.",
+      "options": [
+        "Σωστό",
+        "Λάθος"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Η καλή κατανόηση της τοπικής κουλτούρας βοηθά στην προσαρμογή και προσφέρει ανταγωνιστικό πλεονέκτημα."
     }
   ]
 }
