@@ -42,6 +42,7 @@
             text-align: center;
             margin-bottom: 40px;
             position: relative;
+            z-index: 30; /* ensure visible above start overlay */
         }
 
         .lang-switcher {
@@ -52,31 +53,33 @@
             gap: 8px;
         }
 
-        .lang-btn {
+        .lang-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
             background: #ffffffcc;
             border: 1px solid #e0e0e0;
             border-radius: 16px;
-            padding: 6px 10px;
+            padding: 6px 34px 6px 12px;
             cursor: pointer;
             font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .lang-btn.active {
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
+            font-weight: 600;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%23666" d="M6 8L0 0h12z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
         }
 
         .flag {
             width: 18px;
             height: 12px;
             display: inline-block;
-            background-size: cover;
+            flex: 0 0 18px; /* prevent layout shift */
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
             background-position: center;
             border-radius: 2px;
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+            vertical-align: middle;
         }
         /* Use hosted SVGs for broad browser support; text fallback provided */
         .flag-us { background-image: url('https://flagcdn.com/us.svg'); }
@@ -106,10 +109,10 @@
             margin-bottom: 15px;
         }
         .start-screen {
-            display: none;
-            padding: 20px;
+            display: none; /* toggled to block when shown */
+            padding: 10px 0 20px 0;
             text-align: center;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.3s ease;
         }
 
         .start-card {
@@ -120,6 +123,9 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.06);
             display: inline-block;
             min-width: 260px;
+            margin: 0 auto; /* center on small screens to avoid horizontal drift */
+            max-width: 92vw;
+            box-sizing: border-box;
         }
 
         .start-title {
@@ -434,7 +440,7 @@
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
-                margin: 5px;
+                margin: 0 auto;
                 border-radius: 15px;
             }
 
@@ -510,7 +516,7 @@
         @media (max-width: 480px) {
             .container {
                 padding: 10px;
-                margin: 2px;
+                margin: 0; /* remove extra outer margins that cause the box to slide */
             }
 
             .quiz-title {
@@ -542,6 +548,12 @@
             overflow-y: auto;
         }
 
+        /* On start screen, avoid inner scroll that looks like a moving box */
+        .mobile-device.start-screen-active .container {
+            max-height: none;
+            overflow: visible;
+        }
+
         .mobile-device .option {
             min-height: 50px;
             padding: 16px 20px;
@@ -564,14 +576,21 @@
             -ms-user-select: none;
             user-select: none;
         }
+
+        /* When start screen is visible, prevent body scroll to avoid background moving */
+        .start-screen-active {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="lang-switcher" aria-label="Language selector">
-                <button class="lang-btn" data-lang="en" id="lang-en" title="English (US)"><span class="flag flag-us" aria-hidden="true"></span> <span>EN</span></button>
-                <button class="lang-btn" data-lang="el" id="lang-el" title="Ελληνικά"><span class="flag flag-gr" aria-hidden="true"></span> <span>EL</span></button>
+                <select id="lang-select" class="lang-select" title="Language">
+                    <option value="en">EN</option>
+                    <option value="el">EL</option>
+                </select>
             </div>
             <h1 class="quiz-title" data-i18n="app.title">DypaQuiz</h1>
             <p class="quiz-subtitle" data-i18n="app.subtitle">Interactive Quiz System</p>
@@ -593,15 +612,15 @@
                     <label for="section-select" id="section-label" data-i18n="sections.label" style="margin-right:8px;">Section:</label>
                     <select id="section-select" class="section-select"></select>
                 </div>
-                <div class="start-actions">
-                    <button id="start-btn" class="btn" data-i18n="start">Start</button>
-                </div>
                 <div class="feedback-container">
                     <label for="feedback-select" id="feedback-label" data-i18n="feedback.label">Feedback:</label>
                     <select id="feedback-select" class="feedback-select">
                         <option value="end" data-i18n="feedback.end">At the end</option>
                         <option value="immediate" data-i18n="feedback.immediate">After each question</option>
                     </select>
+                </div>
+                <div class="start-actions">
+                    <button id="start-btn" class="btn" data-i18n="start">Start</button>
                 </div>
             </div>
         </div>
@@ -749,10 +768,8 @@
             }
 
             updateLangButtons() {
-                const enBtn = document.getElementById('lang-en');
-                const elBtn = document.getElementById('lang-el');
-                enBtn.classList.toggle('active', this.lang === 'en');
-                elBtn.classList.toggle('active', this.lang === 'el');
+                const select = document.getElementById('lang-select');
+                if (select) select.value = this.lang;
             }
 
             detectMobile() {
@@ -891,8 +908,13 @@
                 document.getElementById('next-btn').addEventListener('click', () => this.nextQuestion());
                 document.getElementById('finish-btn').addEventListener('click', () => this.finishQuiz());
                 document.getElementById('retake-btn').addEventListener('click', () => this.retakeQuiz());
-                document.getElementById('lang-en').addEventListener('click', () => this.setLanguage('en'));
-                document.getElementById('lang-el').addEventListener('click', () => this.setLanguage('el'));
+                const langSelectEl = document.getElementById('lang-select');
+                if (langSelectEl) {
+                    langSelectEl.value = this.lang;
+                    langSelectEl.addEventListener('change', (e) => {
+                        this.setLanguage(e.target.value);
+                    });
+                }
                 const sectionSelect = document.getElementById('section-select');
                 if (sectionSelect) {
                     sectionSelect.addEventListener('change', (e) => {
@@ -936,8 +958,10 @@
 
             startQuiz() {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('start-screen').style.display = 'none';
+                const ss = document.getElementById('start-screen');
+                ss.style.display = 'none';
                 document.getElementById('quiz-container').style.display = 'block';
+                document.body.classList.remove('start-screen-active');
                 this.renderQuestions();
                 this.updateProgress();
                 this.updateNavigation();
@@ -948,8 +972,10 @@
                 const hasSections = (this.sections && this.sections.length > 0);
                 document.getElementById('loading').style.display = 'none';
                 if (hasSections) {
-                    document.getElementById('start-screen').style.display = 'block';
+                    const ss = document.getElementById('start-screen');
+                    ss.style.display = 'block';
                     document.getElementById('quiz-container').style.display = 'none';
+                    document.body.classList.add('start-screen-active');
                 } else {
                     this.startQuiz();
                 }
