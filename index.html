@@ -444,6 +444,7 @@
                 border-radius: 15px;
             }
 
+
             .quiz-title {
                 font-size: 1.8rem;
                 margin-bottom: 5px;
@@ -451,6 +452,11 @@
 
             .quiz-subtitle {
                 font-size: 1rem;
+            }
+
+            .start-screen {
+                /* Fix mobile margin issues by preventing container scroll */
+                position: relative;
             }
 
             .question-text {
@@ -943,6 +949,7 @@
                         document.getElementById('results-container').classList.remove('active');
                         document.getElementById('quiz-container').style.display = 'none';
                         document.getElementById('start-screen').style.display = 'block';
+                        document.body.classList.add('start-screen-active');
                     });
                 }
                 const feedbackSelect = document.getElementById('feedback-select');
