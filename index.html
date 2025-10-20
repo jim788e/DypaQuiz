@@ -69,6 +69,19 @@
             box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
         }
 
+        .flag {
+            width: 18px;
+            height: 12px;
+            display: inline-block;
+            background-size: cover;
+            background-position: center;
+            border-radius: 2px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+        /* Use hosted SVGs for broad browser support; text fallback provided */
+        .flag-us { background-image: url('https://flagcdn.com/us.svg'); }
+        .flag-gr { background-image: url('https://flagcdn.com/gr.svg'); }
+
         .quiz-title {
             font-size: 2.5rem;
             color: #333;
@@ -557,8 +570,8 @@
     <div class="container">
         <div class="header">
             <div class="lang-switcher" aria-label="Language selector">
-                <button class="lang-btn" data-lang="en" id="lang-en" title="English (US)">🇺🇸 <span>EN</span></button>
-                <button class="lang-btn" data-lang="el" id="lang-el" title="Ελληνικά">🇬🇷 <span>EL</span></button>
+                <button class="lang-btn" data-lang="en" id="lang-en" title="English (US)"><span class="flag flag-us" aria-hidden="true"></span> <span>EN</span></button>
+                <button class="lang-btn" data-lang="el" id="lang-el" title="Ελληνικά"><span class="flag flag-gr" aria-hidden="true"></span> <span>EL</span></button>
             </div>
             <h1 class="quiz-title" data-i18n="app.title">DypaQuiz</h1>
             <p class="quiz-subtitle" data-i18n="app.subtitle">Interactive Quiz System</p>
