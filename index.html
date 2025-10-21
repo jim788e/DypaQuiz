@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DypaQuiz - Interactive Quiz System</title>
-    <script type="module">
-        import { inject } from 'https://unpkg.com/@vercel/analytics@latest/dist/analytics.js';
-        
-        // Initialize Vercel Analytics
-        inject();
-        
-        // Make analytics available globally
-        window.va = window.va || function() { (window.vaq = window.vaq || []).push(arguments); };
+    <script defer src="https://unpkg.com/@vercel/analytics@latest/dist/analytics.js"></script>
+    <script>
+        // Initialize Vercel Analytics when loaded
+        window.addEventListener('load', function() {
+            if (window.va) {
+                window.va('track', 'Page View');
+            }
+        });
     </script>
     <style>
         * {
