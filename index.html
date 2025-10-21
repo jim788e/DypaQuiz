@@ -1099,7 +1099,7 @@
                 // Use questions in order or shuffle based on user preference
                 const working = [...this.questions];
                 if (this.randomizeQuestions) {
-                    // Fisher-Yates shuffle
+                    // Fisher-Yates shuffle for questions only
                     for (let i = working.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [working[i], working[j]] = [working[j], working[i]];
@@ -1112,6 +1112,9 @@
                     const questionDiv = document.createElement('div');
                     questionDiv.className = 'question-container';
                     questionDiv.id = `question-${index}`;
+                    
+                    // Store the original question index for proper answer tracking
+                    questionDiv.setAttribute('data-original-index', question.id - 1);
                     
                     questionDiv.innerHTML = `
                         <div class="question-number" data-question-number="${index}">Question ${index + 1}</div>
@@ -1156,8 +1159,12 @@
                 document.querySelectorAll('.question-container').forEach(q => q.classList.remove('active'));
                 document.getElementById(`question-${index}`).classList.add('active');
                 
+                // Get the original question index for proper answer tracking
+                const questionElement = document.getElementById(`question-${index}`);
+                const originalIndex = parseInt(questionElement.getAttribute('data-original-index'));
+                
                 // Restore user's previous selection if any
-                const userAnswer = this.userAnswers[index];
+                const userAnswer = this.userAnswers[originalIndex];
                 if (userAnswer !== undefined) {
                     const options = document.querySelectorAll(`#question-${index} .option`);
                     options.forEach(option => option.classList.remove('selected'));
@@ -1175,11 +1182,15 @@
                 // Add selection to clicked option
                 options[optionIndex].classList.add('selected');
                 
-                // Store user's answer
-                this.userAnswers[questionIndex] = optionIndex;
+                // Get the original question index for proper answer tracking
+                const questionElement = document.getElementById(`question-${questionIndex}`);
+                const originalIndex = parseInt(questionElement.getAttribute('data-original-index'));
+                
+                // Store user's answer using the original question index
+                this.userAnswers[originalIndex] = optionIndex;
                 
                 if (this.feedbackMode === 'immediate') {
-                    const question = this.questions[questionIndex];
+                    const question = this.questions[originalIndex];
                     const correctIdx = question.correctAnswer;
                     options.forEach((optEl, idx) => {
                         optEl.classList.remove('correct', 'incorrect', 'tooltip');
@@ -1229,7 +1240,11 @@
                 const prevBtn = document.getElementById('prev-btn');
                 const nextBtn = document.getElementById('next-btn');
                 const finishBtn = document.getElementById('finish-btn');
-                const answered = this.userAnswers[this.currentQuestionIndex] !== undefined;
+                
+                // Get the original question index for proper answer tracking
+                const questionElement = document.getElementById(`question-${this.currentQuestionIndex}`);
+                const originalIndex = parseInt(questionElement.getAttribute('data-original-index'));
+                const answered = this.userAnswers[originalIndex] !== undefined;
 
                 prevBtn.disabled = this.currentQuestionIndex === 0;
                 
