@@ -3,6 +3,7 @@
   "questions": [
     {
       "id": 1,
+      "section": "1",
       "question": "What is the largest planet in our solar system?",
       "options": ["Mars", "Jupiter", "Saturn", "Neptune"],
       "correctAnswer": 1,
@@ -10,6 +11,7 @@
     },
     {
       "id": 2,
+      "section": "1",
       "question": "Who painted the Mona Lisa?",
       "options": ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
       "correctAnswer": 2,
@@ -17,6 +19,7 @@
     },
     {
       "id": 3,
+      "section": "1",
       "question": "What is the chemical symbol for gold?",
       "options": ["Go", "Gd", "Au", "Ag"],
       "correctAnswer": 2,
@@ -24,6 +27,7 @@
     },
     {
       "id": 4,
+      "section": "1",
       "question": "Which country is home to the kangaroo?",
       "options": ["New Zealand", "Australia", "South Africa", "Brazil"],
       "correctAnswer": 1,
@@ -31,6 +35,7 @@
     },
     {
       "id": 5,
+      "section": "1",
       "question": "How many continents are there on Earth?",
       "options": ["5", "6", "7", "8"],
       "correctAnswer": 2,
@@ -38,6 +43,7 @@
     },
     {
       "id": 6,
+      "section": "2",
       "question": "What is the speed of light in vacuum?",
       "options": ["300,000 km/s", "150,000 km/s", "450,000 km/s", "200,000 km/s"],
       "correctAnswer": 0,
@@ -45,6 +51,7 @@
     },
     {
       "id": 7,
+      "section": "2",
       "question": "Who wrote the play 'Romeo and Juliet'?",
       "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
       "correctAnswer": 1,
@@ -52,6 +59,7 @@
     },
     {
       "id": 8,
+      "section": "2",
       "question": "What is the smallest prime number?",
       "options": ["0", "1", "2", "3"],
       "correctAnswer": 2,
@@ -59,6 +67,7 @@
     },
     {
       "id": 9,
+      "section": "2",
       "question": "In which year did World War II end?",
       "options": ["1943", "1944", "1945", "1946"],
       "correctAnswer": 2,
@@ -66,6 +75,7 @@
     },
     {
       "id": 10,
+      "section": "2",
       "question": "What is the capital city of Japan?",
       "options": ["Osaka", "Kyoto", "Tokyo", "Hiroshima"],
       "correctAnswer": 2,

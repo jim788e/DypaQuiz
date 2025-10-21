@@ -438,10 +438,21 @@
 
         /* Mobile-specific styles */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+            }
+            
             .container {
                 padding: 15px;
                 margin: 0 auto;
                 border-radius: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
 
@@ -457,6 +468,17 @@
             .start-screen {
                 /* Fix mobile margin issues by preventing container scroll */
                 position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+            }
+            
+            .start-card {
+                margin: 0 auto;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
             .question-text {
@@ -520,9 +542,16 @@
 
         /* Extra small mobile devices */
         @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
             .container {
                 padding: 10px;
-                margin: 0; /* remove extra outer margins that cause the box to slide */
+                margin: 0 auto;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
             .quiz-title {
@@ -615,7 +644,7 @@
         <div id="start-screen" class="start-screen">
             <div class="start-card">
                 <div id="section-container" class="section-container" aria-label="Section selector" style="justify-content:center; margin-bottom:20px;">
-                    <label for="section-select" id="section-label" data-i18n="sections.label" style="margin-right:8px;">Section:</label>
+                    <label for="section-select" id="section-label" data-i18n="sections.label" style="margin-right:8px;">Chapter:</label>
                     <select id="section-select" class="section-select"></select>
                 </div>
                 <div class="feedback-container">
@@ -712,12 +741,12 @@
                         'nav.retake': 'Retake Quiz',
                         'nav.home': 'Return to start',
                         start: 'Start',
-                        'sections.label': 'Section:',
-                        'sections.all': 'All sections',
+                        'sections.label': 'Chapter:',
+                        'sections.all': 'All chapters',
                         'feedback.label': 'Feedback:',
                         'feedback.end': 'At the end',
                         'feedback.immediate': 'After each question',
-                        'sections.summary': 'Section: {name} ({count}/{total})',
+                        'sections.summary': 'Chapter: {name} ({count}/{total})',
                         'progress': 'Question {current} of {total}',
                         'results.details': '{correct} out of {total} correct',
                         'results.perfect': '🎉 Perfect! All answers are correct!',
@@ -738,12 +767,12 @@
                         'nav.retake': 'Επανάληψη Κουίζ',
                         'nav.home': 'Επιστροφή στην αρχική',
                         start: 'Έναρξη',
-                        'sections.label': 'Ενότητα:',
-                        'sections.all': 'Όλες οι ενότητες',
+                        'sections.label': 'Κεφάλαιο:',
+                        'sections.all': 'Όλα τα κεφάλαια',
                         'feedback.label': 'Έλεγχος απάντησης',
                         'feedback.end': 'Στο τέλος',
                         'feedback.immediate': 'Μετά από κάθε ερώτηση',
-                        'sections.summary': 'Ενότητα: {name} ({count}/{total})',
+                        'sections.summary': 'Κεφάλαιο: {name} ({count}/{total})',
                         'progress': 'Ερώτηση {current} από {total}',
                         'results.details': '{correct} από {total} σωστές',
                         'results.perfect': '🎉 Τέλεια! Όλες οι απαντήσεις είναι σωστές!',
@@ -1085,9 +1114,8 @@
                     if (optionIndex !== correctIdx) {
                         const wrongEl = options[optionIndex];
                         wrongEl.classList.add('incorrect', 'tooltip');
-                        const correctText = question.options[correctIdx];
-                        const explanation = question.explanation ? `\n${question.explanation}` : '';
-                        wrongEl.setAttribute('data-tooltip', this.t('results.correctAnswer', { answer: correctText }) + explanation);
+                        const explanation = question.explanation || '';
+                        wrongEl.setAttribute('data-tooltip', explanation);
                     }
                 }
 
