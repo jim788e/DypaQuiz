@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DypaQuiz - Interactive Quiz System</title>
-    <script>
-        // Vercel Analytics - Initialize
-        window.va = window.va || function() { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="https://va.vercel-scripts.com/v1/script.debug.js"></script>
     <style>
         * {
             margin: 0;
@@ -901,11 +896,6 @@
                 this.updateLangButtons();
                 this.applyTranslations();
                 
-                // Track language change
-                this.trackEvent('Language Changed', {
-                    newLanguage: lang,
-                    section: this.currentSection
-                });
             }
 
             updateLangButtons() {
@@ -1061,12 +1051,6 @@
                     sectionSelect.addEventListener('change', (e) => {
                         const newSection = e.target.value || 'all';
                         
-                        // Track section change
-                        this.trackEvent('Section Changed', {
-                            fromSection: this.currentSection,
-                            toSection: newSection,
-                            language: this.lang
-                        });
                         
                         this.currentSection = newSection;
                         // If on start screen simply apply filter; if already in quiz, rebuild
@@ -1126,13 +1110,6 @@
                 this.updateNavigation();
                 this.updateSectionSummary();
                 
-                // Track quiz start event
-                this.trackEvent('Quiz Started', {
-                    section: this.currentSection,
-                    randomize: this.randomizeQuestions,
-                    feedbackMode: this.feedbackMode,
-                    language: this.lang
-                });
             }
 
             showStartScreenOrQuiz() {
@@ -1250,13 +1227,6 @@
                 // Store user's answer using the original question index
                 this.userAnswers[originalIndex] = optionIndex;
                 
-                // Track answer selection
-                this.trackEvent('Answer Selected', {
-                    questionIndex: originalIndex,
-                    optionIndex: optionIndex,
-                    section: this.currentSection,
-                    language: this.lang
-                });
                 
                 if (this.feedbackMode === 'immediate') {
                     const question = this.questions[originalIndex];
@@ -1300,13 +1270,6 @@
                     this.updateProgress();
                     this.updateNavigation();
                     
-                    // Track navigation
-                    this.trackEvent('Question Navigation', {
-                        action: 'previous',
-                        currentQuestion: this.currentQuestionIndex + 1,
-                        totalQuestions: this.questions.length,
-                        section: this.currentSection
-                    });
                 }
             }
 
@@ -1317,13 +1280,6 @@
                     this.updateProgress();
                     this.updateNavigation();
                     
-                    // Track navigation
-                    this.trackEvent('Question Navigation', {
-                        action: 'next',
-                        currentQuestion: this.currentQuestionIndex + 1,
-                        totalQuestions: this.questions.length,
-                        section: this.currentSection
-                    });
                 }
             }
 
@@ -1362,16 +1318,6 @@
                 this.calculateResults();
                 this.showResults();
                 
-                // Track quiz completion event
-                this.trackEvent('Quiz Completed', {
-                    score: this.results.percentage,
-                    correct: this.results.correct,
-                    total: this.results.total,
-                    section: this.currentSection,
-                    randomize: this.randomizeQuestions,
-                    feedbackMode: this.feedbackMode,
-                    language: this.lang
-                });
             }
 
             calculateResults() {
@@ -1431,12 +1377,6 @@
             }
 
             retakeQuiz() {
-                // Track retake event
-                this.trackEvent('Quiz Retaken', {
-                    previousScore: this.results?.percentage || 0,
-                    section: this.currentSection,
-                    language: this.lang
-                });
 
                 // Reset all data
                 this.currentQuestionIndex = 0;
@@ -1521,22 +1461,6 @@
                 }
             }
 
-            trackEvent(eventName, data = {}) {
-                try {
-                    // Use Vercel Analytics va function
-                    if (window.va && typeof window.va === 'function') {
-                        window.va('track', eventName, data);
-                        console.log('Analytics event tracked:', eventName, data);
-                    } else {
-                        // Fallback: queue the event until analytics loads
-                        window.vaq = window.vaq || [];
-                        window.vaq.push(['track', eventName, data]);
-                        console.log('Analytics event queued:', eventName, data);
-                    }
-                } catch (error) {
-                    console.error('Error tracking analytics event:', error);
-                }
-            }
         }
 
         // Initialize the quiz app when the page loads
