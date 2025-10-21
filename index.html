@@ -1084,6 +1084,14 @@
                 this.updateSectionSummary();
                 
                 // Track quiz start event
+                console.log('Attempting to track quiz start...', {
+                    windowVa: typeof window.va,
+                    section: this.currentSection,
+                    randomize: this.randomizeQuestions,
+                    feedbackMode: this.feedbackMode,
+                    language: this.lang
+                });
+                
                 if (window.va) {
                     window.va('track', 'Quiz Started', {
                         section: this.currentSection,
@@ -1091,6 +1099,16 @@
                         feedbackMode: this.feedbackMode,
                         language: this.lang
                     });
+                    console.log('Quiz Started event sent');
+                } else {
+                    console.log('window.va not available, queuing event');
+                    window.vaq = window.vaq || [];
+                    window.vaq.push(['track', 'Quiz Started', {
+                        section: this.currentSection,
+                        randomize: this.randomizeQuestions,
+                        feedbackMode: this.feedbackMode,
+                        language: this.lang
+                    }]);
                 }
             }
 
@@ -1280,6 +1298,13 @@
                 this.showResults();
                 
                 // Track quiz completion event
+                console.log('Attempting to track quiz completion...', {
+                    windowVa: typeof window.va,
+                    score: this.results.percentage,
+                    correct: this.results.correct,
+                    total: this.results.total
+                });
+                
                 if (window.va) {
                     window.va('track', 'Quiz Completed', {
                         score: this.results.percentage,
@@ -1290,6 +1315,19 @@
                         feedbackMode: this.feedbackMode,
                         language: this.lang
                     });
+                    console.log('Quiz Completed event sent');
+                } else {
+                    console.log('window.va not available, queuing completion event');
+                    window.vaq = window.vaq || [];
+                    window.vaq.push(['track', 'Quiz Completed', {
+                        score: this.results.percentage,
+                        correct: this.results.correct,
+                        total: this.results.total,
+                        section: this.currentSection,
+                        randomize: this.randomizeQuestions,
+                        feedbackMode: this.feedbackMode,
+                        language: this.lang
+                    }]);
                 }
             }
 
