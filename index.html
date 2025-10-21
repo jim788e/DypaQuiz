@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DypaQuiz - Interactive Quiz System</title>
-    <script>
-        // Vercel Analytics - Web implementation
-        window.va = window.va || function() { (window.vaq = window.vaq || []).push(arguments); };
+    <script type="module">
+        import { inject, track } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@1.1.0/dist/analytics.js';
+        inject();
+        
+        // Make track function globally available
+        window.track = track;
     </script>
-    <script defer src="https://va.vercel-scripts.com/v1/script.debug.js"></script>
     <style>
         * {
             margin: 0;
@@ -900,6 +902,12 @@
                 document.documentElement.setAttribute('lang', lang);
                 this.updateLangButtons();
                 this.applyTranslations();
+                
+                // Track language change
+                this.trackEvent('Language Changed', {
+                    newLanguage: lang,
+                    section: this.currentSection
+                });
             }
 
             updateLangButtons() {
@@ -1053,7 +1061,16 @@
                 const sectionSelect = document.getElementById('section-select');
                 if (sectionSelect) {
                     sectionSelect.addEventListener('change', (e) => {
-                        this.currentSection = e.target.value || 'all';
+                        const newSection = e.target.value || 'all';
+                        
+                        // Track section change
+                        this.trackEvent('Section Changed', {
+                            fromSection: this.currentSection,
+                            toSection: newSection,
+                            language: this.lang
+                        });
+                        
+                        this.currentSection = newSection;
                         // If on start screen simply apply filter; if already in quiz, rebuild
                         this.currentQuestionIndex = 0;
                         this.userAnswers = {};
@@ -1112,32 +1129,12 @@
                 this.updateSectionSummary();
                 
                 // Track quiz start event
-                console.log('Attempting to track quiz start...', {
-                    windowVa: typeof window.va,
+                this.trackEvent('Quiz Started', {
                     section: this.currentSection,
                     randomize: this.randomizeQuestions,
                     feedbackMode: this.feedbackMode,
                     language: this.lang
                 });
-                
-                if (window.va) {
-                    window.va('track', 'Quiz Started', {
-                        section: this.currentSection,
-                        randomize: this.randomizeQuestions,
-                        feedbackMode: this.feedbackMode,
-                        language: this.lang
-                    });
-                    console.log('Quiz Started event sent');
-                } else {
-                    console.log('window.va not available, queuing event');
-                    window.vaq = window.vaq || [];
-                    window.vaq.push(['track', 'Quiz Started', {
-                        section: this.currentSection,
-                        randomize: this.randomizeQuestions,
-                        feedbackMode: this.feedbackMode,
-                        language: this.lang
-                    }]);
-                }
             }
 
             showStartScreenOrQuiz() {
@@ -1255,6 +1252,14 @@
                 // Store user's answer using the original question index
                 this.userAnswers[originalIndex] = optionIndex;
                 
+                // Track answer selection
+                this.trackEvent('Answer Selected', {
+                    questionIndex: originalIndex,
+                    optionIndex: optionIndex,
+                    section: this.currentSection,
+                    language: this.lang
+                });
+                
                 if (this.feedbackMode === 'immediate') {
                     const question = this.questions[originalIndex];
                     const correctIdx = question.correctAnswer;
@@ -1296,6 +1301,14 @@
                     this.showQuestion(this.currentQuestionIndex);
                     this.updateProgress();
                     this.updateNavigation();
+                    
+                    // Track navigation
+                    this.trackEvent('Question Navigation', {
+                        action: 'previous',
+                        currentQuestion: this.currentQuestionIndex + 1,
+                        totalQuestions: this.questions.length,
+                        section: this.currentSection
+                    });
                 }
             }
 
@@ -1305,6 +1318,14 @@
                     this.showQuestion(this.currentQuestionIndex);
                     this.updateProgress();
                     this.updateNavigation();
+                    
+                    // Track navigation
+                    this.trackEvent('Question Navigation', {
+                        action: 'next',
+                        currentQuestion: this.currentQuestionIndex + 1,
+                        totalQuestions: this.questions.length,
+                        section: this.currentSection
+                    });
                 }
             }
 
@@ -1344,37 +1365,15 @@
                 this.showResults();
                 
                 // Track quiz completion event
-                console.log('Attempting to track quiz completion...', {
-                    windowVa: typeof window.va,
+                this.trackEvent('Quiz Completed', {
                     score: this.results.percentage,
                     correct: this.results.correct,
-                    total: this.results.total
+                    total: this.results.total,
+                    section: this.currentSection,
+                    randomize: this.randomizeQuestions,
+                    feedbackMode: this.feedbackMode,
+                    language: this.lang
                 });
-                
-                if (window.va) {
-                    window.va('track', 'Quiz Completed', {
-                        score: this.results.percentage,
-                        correct: this.results.correct,
-                        total: this.results.total,
-                        section: this.currentSection,
-                        randomize: this.randomizeQuestions,
-                        feedbackMode: this.feedbackMode,
-                        language: this.lang
-                    });
-                    console.log('Quiz Completed event sent');
-                } else {
-                    console.log('window.va not available, queuing completion event');
-                    window.vaq = window.vaq || [];
-                    window.vaq.push(['track', 'Quiz Completed', {
-                        score: this.results.percentage,
-                        correct: this.results.correct,
-                        total: this.results.total,
-                        section: this.currentSection,
-                        randomize: this.randomizeQuestions,
-                        feedbackMode: this.feedbackMode,
-                        language: this.lang
-                    }]);
-                }
             }
 
             calculateResults() {
@@ -1434,6 +1433,13 @@
             }
 
             retakeQuiz() {
+                // Track retake event
+                this.trackEvent('Quiz Retaken', {
+                    previousScore: this.results?.percentage || 0,
+                    section: this.currentSection,
+                    language: this.lang
+                });
+
                 // Reset all data
                 this.currentQuestionIndex = 0;
                 this.userAnswers = {};
@@ -1514,6 +1520,19 @@
                     el.textContent = this.t('sections.summary', { name, count, total });
                 } else {
                     el.style.display = 'none';
+                }
+            }
+
+            trackEvent(eventName, data = {}) {
+                try {
+                    if (window.track && typeof window.track === 'function') {
+                        window.track(eventName, data);
+                        console.log('Analytics event tracked:', eventName, data);
+                    } else {
+                        console.warn('Analytics track function not available');
+                    }
+                } catch (error) {
+                    console.error('Error tracking analytics event:', error);
                 }
             }
         }
