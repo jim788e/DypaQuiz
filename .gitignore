@@ -45,3 +45,9 @@ coverage/
 
 # Vercel
 .vercel
+
+# Quiz content files (not needed in repository)
+questionsSection2.txt
+explanation.md
+questions.txt
+AnswerWithExpanationSection2.txt
