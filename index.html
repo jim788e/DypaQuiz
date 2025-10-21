@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DypaQuiz - Interactive Quiz System</title>
-    <script type="module">
-        import { inject, track } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@1.1.0/dist/analytics.js';
-        inject();
-        
-        // Make track function globally available
-        window.track = track;
+    <script>
+        // Vercel Analytics - Initialize
+        window.va = window.va || function() { (window.vaq = window.vaq || []).push(arguments); };
     </script>
+    <script defer src="https://va.vercel-scripts.com/v1/script.debug.js"></script>
     <style>
         * {
             margin: 0;
@@ -1525,11 +1523,15 @@
 
             trackEvent(eventName, data = {}) {
                 try {
-                    if (window.track && typeof window.track === 'function') {
-                        window.track(eventName, data);
+                    // Use Vercel Analytics va function
+                    if (window.va && typeof window.va === 'function') {
+                        window.va('track', eventName, data);
                         console.log('Analytics event tracked:', eventName, data);
                     } else {
-                        console.warn('Analytics track function not available');
+                        // Fallback: queue the event until analytics loads
+                        window.vaq = window.vaq || [];
+                        window.vaq.push(['track', eventName, data]);
+                        console.log('Analytics event queued:', eventName, data);
                     }
                 } catch (error) {
                     console.error('Error tracking analytics event:', error);
