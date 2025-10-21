@@ -232,6 +232,32 @@
             z-index: 5;
         }
 
+        /* Mobile-friendly explanation area */
+        .explanation-area {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #495057;
+            display: none;
+        }
+
+        .explanation-area.show {
+            display: block;
+        }
+
+        .explanation-area .explanation-title {
+            font-weight: 600;
+            color: #dc3545;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
 
         .section-select {
             padding: 8px 12px;
@@ -824,7 +850,8 @@
                         'results.incorrectHeader': 'Incorrect Answers ({count})',
                         'results.yourAnswer': 'Your answer: {answer}',
                         'results.correctAnswer': 'Correct answer: {answer}',
-                        'results.notAnswered': 'Not answered'
+                        'results.notAnswered': 'Not answered',
+                        'explanation.title': 'Explanation'
                     },
                     el: {
                         'app.title': 'DypaQuiz',
@@ -851,7 +878,8 @@
                         'results.incorrectHeader': 'Λανθασμένες Απαντήσεις ({count})',
                         'results.yourAnswer': 'Η απάντησή σας: {answer}',
                         'results.correctAnswer': 'Σωστή απάντηση: {answer}',
-                        'results.notAnswered': 'Δεν απαντήθηκε'
+                        'results.notAnswered': 'Δεν απαντήθηκε',
+                        'explanation.title': 'Εξήγηση'
                     }
                 };
             }
@@ -1147,7 +1175,7 @@
                     questionDiv.id = `question-${index}`;
                     
                     // Store the original question index for proper answer tracking
-                    questionDiv.setAttribute('data-original-index', question.id - 1);
+                    questionDiv.setAttribute('data-original-index', this.questions.indexOf(question));
                     
                     questionDiv.innerHTML = `
                         <div class="question-number" data-question-number="${index}">Question ${index + 1}</div>
@@ -1159,6 +1187,10 @@
                                     ${option}
                                 </div>
                             `).join('')}
+                        </div>
+                        <div class="explanation-area" id="explanation-${index}">
+                            <div class="explanation-title" data-i18n="explanation.title">Explanation</div>
+                            <div class="explanation-text"></div>
                         </div>
                     `;
 
@@ -1181,6 +1213,7 @@
                                 this.selectOption(index, parseInt(option.dataset.option));
                             });
                         }
+                        
                     });
                 });
 
@@ -1226,17 +1259,30 @@
                     const question = this.questions[originalIndex];
                     const correctIdx = question.correctAnswer;
                     options.forEach((optEl, idx) => {
-                        optEl.classList.remove('correct', 'incorrect', 'tooltip');
-                        optEl.removeAttribute('data-tooltip');
+                        optEl.classList.remove('correct', 'incorrect');
                         if (idx === correctIdx) {
                             optEl.classList.add('correct');
                         }
                     });
                     if (optionIndex !== correctIdx) {
                         const wrongEl = options[optionIndex];
-                        wrongEl.classList.add('incorrect', 'tooltip');
-                        const explanation = question.explanation || '';
-                        wrongEl.setAttribute('data-tooltip', explanation);
+                        wrongEl.classList.add('incorrect');
+                        
+                        // Show explanation area
+                        const explanationArea = document.getElementById(`explanation-${questionIndex}`);
+                        if (explanationArea) {
+                            const explanationText = explanationArea.querySelector('.explanation-text');
+                            if (explanationText) {
+                                explanationText.textContent = question.explanation || '';
+                                explanationArea.classList.add('show');
+                            }
+                        }
+                    } else {
+                        // Hide explanation area for correct answers
+                        const explanationArea = document.getElementById(`explanation-${questionIndex}`);
+                        if (explanationArea) {
+                            explanationArea.classList.remove('show');
+                        }
                     }
                 }
 
