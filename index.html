@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DypaQuiz - Interactive Quiz System</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RWFSG8PFSK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RWFSG8PFSK');
+    </script>
     <style>
         * {
             margin: 0;
@@ -890,6 +899,16 @@
 
             setLanguage(lang) {
                 if (!['en','el'].includes(lang)) return;
+                
+                // Track language change event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'language_changed', {
+                        'old_language': this.lang,
+                        'new_language': lang,
+                        'section': this.currentSection
+                    });
+                }
+                
                 this.lang = lang;
                 localStorage.setItem('lang', lang);
                 document.documentElement.setAttribute('lang', lang);
@@ -1051,6 +1070,14 @@
                     sectionSelect.addEventListener('change', (e) => {
                         const newSection = e.target.value || 'all';
                         
+                        // Track section change event
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'section_changed', {
+                                'old_section': this.currentSection,
+                                'new_section': newSection,
+                                'language': this.lang
+                            });
+                        }
                         
                         this.currentSection = newSection;
                         // If on start screen simply apply filter; if already in quiz, rebuild
@@ -1110,6 +1137,16 @@
                 this.updateNavigation();
                 this.updateSectionSummary();
                 
+                // Track quiz start event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'quiz_started', {
+                        'section': this.currentSection,
+                        'question_count': this.questions.length,
+                        'randomize_questions': this.randomizeQuestions,
+                        'feedback_mode': this.feedbackMode,
+                        'language': this.lang
+                    });
+                }
             }
 
             showStartScreenOrQuiz() {
@@ -1318,6 +1355,17 @@
                 this.calculateResults();
                 this.showResults();
                 
+                // Track quiz completion event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'quiz_completed', {
+                        'section': this.currentSection,
+                        'score_percentage': this.results.percentage,
+                        'correct_answers': this.results.correct,
+                        'total_questions': this.results.total,
+                        'wrong_answers': this.results.wrong.length,
+                        'language': this.lang
+                    });
+                }
             }
 
             calculateResults() {
@@ -1377,6 +1425,14 @@
             }
 
             retakeQuiz() {
+                // Track quiz retake event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'quiz_retaken', {
+                        'section': this.currentSection,
+                        'previous_score': this.results ? this.results.percentage : 0,
+                        'language': this.lang
+                    });
+                }
 
                 // Reset all data
                 this.currentQuestionIndex = 0;

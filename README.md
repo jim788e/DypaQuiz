@@ -206,6 +206,47 @@ MIT License - feel free to use and modify as needed.
 
 A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScript.
 
+## Google Analytics
+
+The application includes Google Analytics 4 (GA4) tracking to monitor user engagement and quiz performance.
+
+### Configuration
+
+The tracking is already configured with Measurement ID: `G-RWFSG8PFSK`. If you need to change this:
+
+1. **Update the Measurement ID** in `index.html` (line 9 and 14):
+   ```html
+   <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_MEASUREMENT_ID"></script>
+   <script>
+       window.dataLayer = window.dataLayer || [];
+       function gtag(){dataLayer.push(arguments);}
+       gtag('js', new Date());
+       gtag('config', 'YOUR_MEASUREMENT_ID');
+   </script>
+   ```
+
+### Tracked Events
+
+The application tracks the following user interactions:
+
+- **`quiz_started`**: When a user begins a quiz
+  - Parameters: section, question_count, randomize_questions, feedback_mode, language
+- **`quiz_completed`**: When a user finishes a quiz
+  - Parameters: section, score_percentage, correct_answers, total_questions, wrong_answers, language
+- **`section_changed`**: When a user switches quiz sections
+  - Parameters: old_section, new_section, language
+- **`language_changed`**: When a user switches the interface language
+  - Parameters: old_language, new_language, section
+- **`quiz_retaken`**: When a user retakes a quiz
+  - Parameters: section, previous_score, language
+
+### Privacy Considerations
+
+- No personal information is tracked
+- No specific quiz answers are recorded
+- Only aggregate performance metrics are collected
+- Users can disable tracking through browser settings or ad blockers
+
 ## Support
 
 For issues or questions:
