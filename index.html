@@ -269,6 +269,9 @@
             border: 1px solid #e0e0e0;
             background: #fff;
             font-size: 0.95rem;
+            min-width: 200px;
+            max-width: 100%;
+            width: auto;
         }
 
         .progress-bar {
@@ -542,6 +545,47 @@
                 box-sizing: border-box;
             }
 
+            .section-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                margin-bottom: 15px;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .section-select {
+                width: 100%;
+                min-width: unset;
+                max-width: 100%;
+                font-size: 0.9rem;
+                padding: 10px 12px;
+                box-sizing: border-box;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .feedback-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .feedback-select {
+                width: 100%;
+                min-width: unset;
+                max-width: 100%;
+                font-size: 0.9rem;
+                padding: 10px 12px;
+                box-sizing: border-box;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
 
             .quiz-title {
                 font-size: 1.8rem;
@@ -639,6 +683,22 @@
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
+            }
+
+            .section-select {
+                font-size: 0.85rem;
+                padding: 8px 10px;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .feedback-select {
+                font-size: 0.85rem;
+                padding: 8px 10px;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .quiz-title {
@@ -1115,7 +1175,12 @@
                         }
                     }
                     
-                    opt.textContent = `${chapterTitle} (${count})`;
+                    // Shorten text for mobile if too long
+                    let displayText = `${chapterTitle} (${count})`;
+                    if (this.isMobile && displayText.length > 25) {
+                        displayText = `${chapterTitle.substring(0, 15)}... (${count})`;
+                    }
+                    opt.textContent = displayText;
                     select.appendChild(opt);
                 });
                 select.value = this.currentSection;
