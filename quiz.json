@@ -12,6 +12,12 @@
       "chapterFile": "Chapter2.json",
       "chapterTitle": "2 - Ηλεκτρονικό Εμπόριο και Ψηφιακός Μετασχηματισμός",
       "enabled": true
+    },
+    {
+      "chapterNumber": 3,
+      "chapterFile": "Chapter3.json",
+      "chapterTitle": "3 - Ψηφιακός Μετασχηματισμός και Τεχνολογίες",
+      "enabled": true
     }
   ],
   "questions": [],
