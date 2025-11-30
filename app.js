@@ -788,7 +788,6 @@ class QuizApp {
             ['feedback.immediate', "#feedback-select option[value='immediate']"],
             ['randomize.label', '.randomize-text'],
             ['randomMode.questionsLabel', '#random-questions-label'],
-            ['credits.createdBy', '.credits-text'],
         ];
         
         mappings.forEach(([key, selector]) => {
