@@ -18,6 +18,12 @@
       "chapterFile": "Chapter3.json",
       "chapterTitle": "3 - Ψηφιακός Μετασχηματισμός και Τεχνολογίες",
       "enabled": true
+    },
+    {
+      "chapterNumber": 4,
+      "chapterFile": "Chapter4.json",
+      "chapterTitle": "4 - Διαχείριση Εφοδιαστικής Αλυσίδας",
+      "enabled": true
     }
   ],
   "questions": [],

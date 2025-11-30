@@ -520,7 +520,7 @@ class QuizApp {
                 <div class="options-container">
                     ${question.options.map((option, optionIndex) => `
                         <div class="option" data-option="${optionIndex}" data-question="${index}">
-                            <span class="option-label">${['Α', 'Β', 'Γ', 'Δ'][optionIndex]}.</span>
+                            <span class="option-label">${['Α', 'Β', 'Γ', 'Δ', 'Ε'][optionIndex]}.</span>
                             ${option}
                         </div>
                     `).join('')}
