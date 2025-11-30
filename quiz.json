@@ -4,25 +4,31 @@
     {
       "chapterNumber": 1,
       "chapterFile": "Chapter1.json",
-      "chapterTitle": "1 - Διεθνές Μάρκετινγκ και Εξαγωγές",
+      "chapterTitle": "1 - Το περιβαλλον του εξαγωγικου εμποριου",
       "enabled": true
     },
     {
       "chapterNumber": 2,
       "chapterFile": "Chapter2.json",
-      "chapterTitle": "2 - Ηλεκτρονικό Εμπόριο και Ψηφιακός Μετασχηματισμός",
+      "chapterTitle": "2 - Η χρήση ψηφιακων εργαλειων στο εμποριο",
       "enabled": true
     },
     {
       "chapterNumber": 3,
       "chapterFile": "Chapter3.json",
-      "chapterTitle": "3 - Ψηφιακός Μετασχηματισμός και Τεχνολογίες",
+      "chapterTitle": "3 - Ψηφιακα εργαλεια στις εμπορικες συναλλαγες",
       "enabled": true
     },
     {
       "chapterNumber": 4,
       "chapterFile": "Chapter4.json",
       "chapterTitle": "4 - Διαχείριση Εφοδιαστικής Αλυσίδας",
+      "enabled": true
+    },
+    {
+      "chapterNumber": 5,
+      "chapterFile": "Chapter5.json",
+      "chapterTitle": "5 - Διεθνείς Πλατφόρμες Πληρωμών - International Payment Platforms",
       "enabled": true
     }
   ],
