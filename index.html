@@ -45,6 +45,11 @@
                     <label for="section-select" id="section-label" data-i18n="sections.label">Chapter:</label>
                     <select id="section-select" class="section-select"></select>
                 </div>
+                <div id="random-questions-container" class="random-questions-container" style="display: none;">
+                    <label for="random-questions-input" id="random-questions-label" data-i18n="randomMode.questionsLabel">Number of questions:</label>
+                    <input type="number" id="random-questions-input" class="random-questions-input" min="1" max="100" value="50" placeholder="50">
+                    <div id="random-questions-error" class="random-questions-error" style="display: none;"></div>
+                </div>
                 <div class="feedback-container">
                     <label for="feedback-select" id="feedback-label" data-i18n="feedback.label">Feedback:</label>
                     <select id="feedback-select" class="feedback-select">

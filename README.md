@@ -6,6 +6,7 @@ A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScri
 
 - 🎯 **Interactive Quiz Interface**: Clean, modern UI with smooth animations
 - 🔀 **Question Randomization**: Optional question shuffling with user control
+- 🎲 **Random Selection Mode**: Select random questions from all chapters (1-100 questions)
 - 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
 - 📊 **Progress Tracking**: Real-time progress bar and question counter
 - 🎨 **Visual Feedback**: Color-coded answers and smooth transitions
@@ -21,8 +22,8 @@ A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScri
 
 - **Pure Vanilla JavaScript**: No frameworks or external dependencies
 - **Modern ES6+**: Class-based architecture with async/await
-- **Single File**: Everything contained in one HTML file
-- **JSON Data Source**: Loads quiz data from `quiz.json`
+- **Modular Structure**: Separated HTML, CSS, and JavaScript files for better maintainability
+- **JSON Data Source**: Loads quiz data from `quiz.json` and chapter-specific JSON files
 - **Error Handling**: Comprehensive error handling for data loading
 
 ## Quick Start
@@ -47,13 +48,17 @@ A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScri
 ## File Structure
 
 ```
-├── index.html          # Main application file
-├── quiz.json          # Main quiz data file (EDIT THIS)
-├── sample.json        # Sample quiz data (backup/reference)
-├── package.json       # Project configuration
-├── vercel.json        # Vercel deployment config
-├── .gitignore         # Git ignore file
-└── README.md          # This file
+├── index.html          # Main application HTML file
+├── app.js              # Application JavaScript logic
+├── styles.css          # Application styles
+├── quiz.json           # Main quiz configuration file
+├── Chapter1.json       # Chapter 1 questions
+├── Chapter2.json       # Chapter 2 questions
+├── Chapter3.json       # Chapter 3 questions
+├── package.json        # Project configuration
+├── vercel.json         # Vercel deployment config
+├── .gitignore          # Git ignore file
+└── README.md           # This file
 ```
 
 ## Customizing Your Quiz
@@ -69,6 +74,12 @@ A modern, responsive quiz application built with vanilla HTML, CSS, and JavaScri
 - **Default**: Questions appear in serial order (as defined in quiz.json)
 - **Randomize**: Check the "Randomize questions" checkbox to shuffle questions
 - **Answer Options**: Always remain in serial order (A, B, C, D) regardless of randomization
+
+#### Random Selection Mode
+- **Random from all chapters**: Select this option to randomly pick questions from all chapters
+- **Number of questions**: Specify how many questions to include (1-100, default: 50)
+- **Fisher-Yates Algorithm**: Uses proven shuffle algorithm for true randomness
+- **Smart Limits**: Automatically adjusts if requested count exceeds available questions
 
 #### Feedback Modes
 - **At the end**: See results only after completing all questions
@@ -162,7 +173,8 @@ php -S localhost:8000
 ## User Interface Features
 
 ### Start Screen Options
-- **Chapter Selection**: Choose from available sections or all questions
+- **Chapter Selection**: Choose from available sections, all questions, or random selection
+- **Random Selection**: Pick random questions from all chapters (1-100 questions)
 - **Feedback Mode**: Select when to receive answer feedback
 - **Question Randomization**: Toggle between serial and random question order
 - **Language Switcher**: Switch between English and Greek interfaces
@@ -230,7 +242,7 @@ The tracking is already configured with Measurement ID: `G-RWFSG8PFSK`. If you n
 The application tracks the following user interactions:
 
 - **`quiz_started`**: When a user begins a quiz
-  - Parameters: section, question_count, randomize_questions, feedback_mode, language
+  - Parameters: section, question_count, randomize_questions, feedback_mode, language, random_mode, random_count
 - **`quiz_completed`**: When a user finishes a quiz
   - Parameters: section, score_percentage, correct_answers, total_questions, wrong_answers, language
 - **`section_changed`**: When a user switches quiz sections

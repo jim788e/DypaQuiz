@@ -18,6 +18,10 @@ const translations = {
         'feedback.end': 'At the end',
         'feedback.immediate': 'After each question',
         'randomize.label': 'Randomize questions',
+        'randomMode.label': 'Random from all chapters',
+        'randomMode.questionsLabel': 'Number of questions:',
+        'randomMode.questionsPlaceholder': 'Enter number (1-100)',
+        'randomMode.invalidNumber': 'Please enter a number between 1 and 100',
         'sections.summary': 'Chapter: {name} ({count}/{total})',
         'progress': 'Question {current} of {total}',
         'results.details': '{correct} out of {total} correct',
@@ -46,6 +50,10 @@ const translations = {
         'feedback.end': 'Στο τέλος',
         'feedback.immediate': 'Μετά από κάθε ερώτηση',
         'randomize.label': 'Τυχαιοποίηση ερωτήσεων',
+        'randomMode.label': 'Τυχαία επιλογή από όλα τα κεφάλαια',
+        'randomMode.questionsLabel': 'Αριθμός ερωτήσεων:',
+        'randomMode.questionsPlaceholder': 'Εισάγετε αριθμό (1-100)',
+        'randomMode.invalidNumber': 'Παρακαλώ εισάγετε αριθμό μεταξύ 1 και 100',
         'sections.summary': 'Κεφάλαιο: {name} ({count}/{total})',
         'progress': 'Ερώτηση {current} από {total}',
         'results.details': '{correct} από {total} σωστές',
@@ -76,6 +84,8 @@ class QuizApp {
         this.feedbackMode = this.getInitialFeedbackMode();
         this.randomizeQuestions = this.getInitialRandomizeMode();
         this.shuffledIndexMap = [];
+        this.randomModeEnabled = false;
+        this.randomQuestionCount = 50;
         
         this.initializeApp();
     }
@@ -141,6 +151,7 @@ class QuizApp {
             this.setupSectionSelector();
             this.setupEventListeners();
             this.optimizeForMobile();
+            this.toggleRandomQuestionsInput(false); // Hide by default
             this.showStartScreenOrQuiz();
         } catch (error) {
             console.error('Error initializing quiz:', error);
@@ -279,6 +290,11 @@ class QuizApp {
         container.style.display = 'flex';
         select.innerHTML = '';
         
+        const randomOpt = document.createElement('option');
+        randomOpt.value = 'random';
+        randomOpt.textContent = this.t('randomMode.label');
+        select.appendChild(randomOpt);
+        
         const allOpt = document.createElement('option');
         allOpt.value = 'all';
         allOpt.textContent = `${this.t('sections.all')} (${this.totalCount})`;
@@ -304,16 +320,43 @@ class QuizApp {
     }
 
     applySectionFilter() {
-        if (this.currentSection === 'all') {
-            this.questions = [...(this.allQuestions || [])];
+        if (this.currentSection === 'random') {
+            this.randomModeEnabled = true;
+            this.applyRandomSelection(this.randomQuestionCount);
         } else {
-            if (this.quizData.chapters?.length) {
-                const chapterNumber = parseInt(this.currentSection);
-                this.questions = [...(this.chapterData[chapterNumber]?.questions || [])];
+            this.randomModeEnabled = false;
+            if (this.currentSection === 'all') {
+                this.questions = [...(this.allQuestions || [])];
             } else {
-                this.questions = (this.allQuestions || []).filter(q => (q.section || '').trim() === this.currentSection);
+                if (this.quizData.chapters?.length) {
+                    const chapterNumber = parseInt(this.currentSection);
+                    this.questions = [...(this.chapterData[chapterNumber]?.questions || [])];
+                } else {
+                    this.questions = (this.allQuestions || []).filter(q => (q.section || '').trim() === this.currentSection);
+                }
             }
         }
+    }
+
+    applyRandomSelection(count) {
+        const allQuestions = [...(this.allQuestions || [])];
+        if (allQuestions.length === 0) {
+            this.questions = [];
+            return;
+        }
+
+        // Validate count
+        const validCount = Math.max(1, Math.min(100, Math.min(count, allQuestions.length)));
+        
+        // Fisher-Yates shuffle algorithm
+        const shuffled = [...allQuestions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        
+        // Take first validCount questions
+        this.questions = shuffled.slice(0, validCount);
     }
 
     setupEventListeners() {
@@ -344,11 +387,37 @@ class QuizApp {
                 this.currentQuestionIndex = 0;
                 this.userAnswers = {};
                 this.isQuizComplete = false;
+                
+                // Show/hide random questions input
+                this.toggleRandomQuestionsInput(newSection === 'random');
+                
                 this.applySectionFilter();
                 if (document.getElementById('quiz-container').style.display !== 'none') {
                     this.renderQuestions();
                     this.updateProgress();
                     this.updateNavigation();
+                }
+            });
+        }
+        
+        // Random questions input handler
+        const randomQuestionsInput = document.getElementById('random-questions-input');
+        if (randomQuestionsInput) {
+            randomQuestionsInput.value = this.randomQuestionCount;
+            randomQuestionsInput.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                if (!isNaN(value)) {
+                    this.validateRandomQuestionsInput(value);
+                }
+            });
+            randomQuestionsInput.addEventListener('blur', (e) => {
+                const value = parseInt(e.target.value);
+                if (isNaN(value) || value < 1 || value > 100) {
+                    e.target.value = this.randomQuestionCount;
+                    this.validateRandomQuestionsInput(this.randomQuestionCount);
+                } else {
+                    this.randomQuestionCount = value;
+                    this.validateRandomQuestionsInput(value);
                 }
             });
         }
@@ -377,6 +446,17 @@ class QuizApp {
     }
 
     startQuiz() {
+        // Validate random mode input if enabled
+        if (this.currentSection === 'random') {
+            const input = document.getElementById('random-questions-input');
+            const value = parseInt(input?.value || 50);
+            if (!this.validateRandomQuestionsInput(value)) {
+                return; // Don't start if validation fails
+            }
+            this.randomQuestionCount = value;
+            this.applySectionFilter(); // Re-apply filter with correct count
+        }
+        
         document.getElementById('loading').style.display = 'none';
         document.getElementById('start-screen').classList.remove('active');
         document.getElementById('quiz-container').style.display = 'block';
@@ -392,7 +472,9 @@ class QuizApp {
                 'question_count': this.questions.length,
                 'randomize_questions': this.randomizeQuestions,
                 'feedback_mode': this.feedbackMode,
-                'language': this.lang
+                'language': this.lang,
+                'random_mode': this.randomModeEnabled,
+                'random_count': this.randomModeEnabled ? this.randomQuestionCount : null
             });
         }
     }
@@ -703,19 +785,42 @@ class QuizApp {
             ['feedback.end', "#feedback-select option[value='end']"],
             ['feedback.immediate', "#feedback-select option[value='immediate']"],
             ['randomize.label', '.randomize-text'],
+            ['randomMode.questionsLabel', '#random-questions-label'],
         ];
         
         mappings.forEach(([key, selector]) => {
             const el = document.querySelector(selector);
-            if (el) el.textContent = this.t(key);
+            if (el) {
+                if (selector.includes('input') && key.includes('Placeholder')) {
+                    el.placeholder = this.t(key);
+                } else {
+                    el.textContent = this.t(key);
+                }
+            }
         });
-
+        
         const sectionLabel = document.getElementById('section-label');
         if (sectionLabel) sectionLabel.textContent = this.t('sections.label');
         
-        const sectionSelect = document.getElementById('section-select');
-        if (sectionSelect?.options[0]?.value === 'all') {
-            sectionSelect.options[0].textContent = `${this.t('sections.all')} (${this.totalCount || 0})`;
+        // Update section select options
+        const sectionSelectEl = document.getElementById('section-select');
+        if (sectionSelectEl) {
+            // Update random option
+            const randomOption = sectionSelectEl.querySelector('option[value="random"]');
+            if (randomOption) {
+                randomOption.textContent = this.t('randomMode.label');
+            }
+            // Update all chapters option
+            const allOption = sectionSelectEl.querySelector('option[value="all"]');
+            if (allOption) {
+                allOption.textContent = `${this.t('sections.all')} (${this.totalCount || 0})`;
+            }
+        }
+        
+        // Update random questions input placeholder
+        const randomInput = document.getElementById('random-questions-input');
+        if (randomInput) {
+            randomInput.placeholder = this.t('randomMode.questionsPlaceholder');
         }
 
         const progressEl = document.getElementById('progress-text');
@@ -735,6 +840,59 @@ class QuizApp {
             el.textContent = this.t('sections.summary', { name, count, total });
         } else {
             el.style.display = 'none';
+        }
+    }
+
+    toggleRandomQuestionsInput(show) {
+        const container = document.getElementById('random-questions-container');
+        const input = document.getElementById('random-questions-input');
+        const errorDiv = document.getElementById('random-questions-error');
+        if (container) {
+            container.style.display = show ? 'flex' : 'none';
+        }
+        if (input) {
+            if (show) {
+                input.value = this.randomQuestionCount;
+                this.validateRandomQuestionsInput(this.randomQuestionCount);
+            } else {
+                // Clear error when hiding
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    validateRandomQuestionsInput(value) {
+        const input = document.getElementById('random-questions-input');
+        const errorDiv = document.getElementById('random-questions-error');
+        const startBtn = document.getElementById('start-btn');
+        
+        // Handle empty or invalid input
+        if (value === '' || value === null || value === undefined) {
+            value = this.randomQuestionCount || 50;
+            if (input) input.value = value;
+        }
+        
+        const numValue = parseInt(value);
+        if (isNaN(numValue) || numValue < 1 || numValue > 100) {
+            if (errorDiv) {
+                errorDiv.textContent = this.t('randomMode.invalidNumber');
+                errorDiv.style.display = 'block';
+            }
+            if (startBtn) {
+                startBtn.disabled = true;
+            }
+            return false;
+        } else {
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+            if (startBtn) {
+                startBtn.disabled = false;
+            }
+            this.randomQuestionCount = numValue;
+            return true;
         }
     }
 }
