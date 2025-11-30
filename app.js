@@ -2,6 +2,7 @@
 const translations = {
     en: {
         'app.title': 'DypaQuiz',
+        'quiz.title': 'Digital Export Skills Quiz',
         'app.subtitle': 'Interactive Quiz System',
         loading: 'Loading quiz...',
         'error.title': 'Error Loading Quiz',
@@ -30,10 +31,12 @@ const translations = {
         'results.yourAnswer': 'Your answer: {answer}',
         'results.correctAnswer': 'Correct answer: {answer}',
         'results.notAnswered': 'Not answered',
-        'explanation.title': 'Explanation'
+        'explanation.title': 'Explanation',
+        'credits.createdBy': 'Created by'
     },
     el: {
         'app.title': 'DypaQuiz',
+        'quiz.title': 'Κουίζ Ψηφιακών Δεξιοτήτων Εξαγωγών',
         'app.subtitle': 'Διαδραστικό Σύστημα Κουίζ',
         loading: 'Φόρτωση κουίζ...',
         'error.title': 'Σφάλμα φόρτωσης κουίζ',
@@ -62,7 +65,8 @@ const translations = {
         'results.yourAnswer': 'Η απάντησή σας: {answer}',
         'results.correctAnswer': 'Σωστή απάντηση: {answer}',
         'results.notAnswered': 'Δεν απαντήθηκε',
-        'explanation.title': 'Εξήγηση'
+        'explanation.title': 'Εξήγηση',
+        'credits.createdBy': 'Δημιουργήθηκε από'
     }
 };
 
@@ -100,8 +104,7 @@ class QuizApp {
         const saved = localStorage.getItem('lang');
         const supported = ['en', 'el'];
         if (saved && supported.includes(saved)) return saved;
-        const browser = (navigator.language || 'en').slice(0, 2);
-        return supported.includes(browser) ? browser : 'en';
+        return 'el'; // Default to Greek
     }
 
     getInitialFeedbackMode() {
@@ -770,8 +773,7 @@ class QuizApp {
 
     applyTranslations() {
         const mappings = [
-            ['app.title', '.quiz-title'],
-            ['app.subtitle', '.quiz-subtitle'],
+            ['quiz.title', '.quiz-title'],
             ['loading', '#loading p'],
             ['error.title', '#error h3'],
             ['error.detail', '#error p'],
@@ -786,6 +788,7 @@ class QuizApp {
             ['feedback.immediate', "#feedback-select option[value='immediate']"],
             ['randomize.label', '.randomize-text'],
             ['randomMode.questionsLabel', '#random-questions-label'],
+            ['credits.createdBy', '.credits-text'],
         ];
         
         mappings.forEach(([key, selector]) => {
