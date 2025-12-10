@@ -30,6 +30,12 @@
       "chapterFile": "Chapter5.json",
       "chapterTitle": "5 - Διεθνείς Πλατφόρμες Πληρωμών - International Payment Platforms",
       "enabled": true
+    },
+    {
+      "chapterNumber": 6,
+      "chapterFile": "DEMO.json",
+      "chapterTitle": "6 - Demo questions",
+      "enabled": true
     }
   ],
   "questions": [],
